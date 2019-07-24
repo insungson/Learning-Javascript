@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Event Propagation</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <div>
+            <button>Click Me!</button>
+        </div>
+        <script>
+            //이벤트 핸들러를 만들어 반환한다.
+            function logEvent(handlerName, type, cancel, stop, stopImmediate){
+                //실제 이벤트 핸들러이다.
+                return function(evt){
+                    if(cancel) evt.preventDefault();
+                    if(stop) evt.stopPropagation();
+                    if(stopImmediate) evt.stopImmediatePropagation();
+                    console.log(`${type}: ${handlerName}` + 
+                    (evt.defaultPrevented ? ' (canceled)' : ''));
+                }
+            }
+            //이벤트 핸들러를 요소에 추가한다.
+            function addEventLogger(elt, type, action){
+                const capture = type === 'capture'; //이렇게 하면 true, false 값이 들어간다.
+                elt.addEventListener('click',  //(위의capture은 캡처링,버블링 구분 때문에 들어감.)
+                    logEvent(elt.tagName, type, action === 'cancel',
+                    action === 'stop', action === 'stop!'), capture);//위의 logEvent 재정의
+            }
+            const body = document.querySelector('body');
+            const div = document.querySelector('div');
+            const button = document.querySelector('button');
+            //캡처링과 버블링에서 이벤트핸들링
+//             addEventLogger(body, 'capture');
+//             addEventLogger(body, 'bubble');
+//             addEventLogger(div, 'capture');
+//             addEventLogger(div, 'bubble');
+//             addEventLogger(button, 'capture');
+//             addEventLogger(button, 'bubble');
+// // capture: BODY
+// // capture: DIV
+// // capture: BUTTON
+// // bubble: BUTTON
+// // bubble: DIV
+// // bubble: BODY
+// //위와같이 출력됨.. 캡처링 -> 버블링 실행
+
+// //이벤트를 취소해보자
+//             addEventLogger(body, 'capture');
+//             addEventLogger(body, 'bubble');
+//             addEventLogger(div, 'capture', 'cancel');
+//             addEventLogger(div, 'bubble');
+//             addEventLogger(button, 'capture');
+//             addEventLogger(button, 'bubble');
+// // capture: BODY
+// // capture: DIV (canceled)
+// // capture: BUTTON (canceled)
+// // bubble: BUTTON (canceled)
+// // bubble: DIV (canceled)
+// // bubble: BODY (canceled)
+// // 이벤트 전달은 계속 되지만.. 이벤트가 취소된 것을 볼 수 있다.
+//1. preventDefault 
+// 메서드는 이벤트를 취소한다. 취소한 이벤트는 계속 전달되기는 하지만, defaultPrevent
+//프로퍼티가 true로 바뀐 채 계속 전달된다.
+
+// //이제 버튼의 캡처 단계에서 이벤트 전달을 중지해보자
+//             addEventLogger(body, 'capture');
+//             addEventLogger(body, 'bubble');
+//             addEventLogger(div, 'capture', 'cancel');
+//             addEventLogger(div, 'bubble');
+//             addEventLogger(button, 'capture', 'stop');
+//             addEventLogger(button, 'bubble');
+// // capture: BODY
+// // capture: DIV (canceled)
+// // capture: BUTTON (canceled)
+// // bubble: BUTTON (canceled)
+// //버튼 요소에서 이벤트 전달이 멈춘것을 볼 수 있다.
+// //캡처링까지 진행하고 멈췄지만.. 버튼의 버블링 이벤트는 여전히 발생했다.
+// //하지만 <div>, <body> 요소는 이벤트 버블링을 받지 못한다.
+// //2. stopPropagation
+// //이 메서드는 이벤트를 현재 요소에서 끝내고 더는 전달되지 않게 막는다.
+
+//버튼 캡처 단계에서 즉시 멈추게 해보자
+            addEventLogger(body, 'capture');
+            addEventLogger(body, 'bubble');
+            addEventLogger(div, 'capture', 'cancel');
+            addEventLogger(div, 'bubble');
+            addEventLogger(button, 'capture', 'stop!');
+            addEventLogger(button, 'bubble');
+// capture: BODY
+// capture: DIV (canceled)
+// capture: BUTTON (canceled)
+// 3. StopImmediatePropagation
+// 이제 버튼의 캡처단계에서 이벤트 전달이 완전히 멈췄고, 이후 아무일도 일어나지 않는다.
+        </script>
+    </body>
+</html>

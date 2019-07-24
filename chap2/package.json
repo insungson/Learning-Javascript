@@ -1,0 +1,23 @@
+{
+  "name": "chap2",
+  "version": "1.0.0",
+  "description": "study",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "eslint": "^5.15.1",
+    "gulp": "^4.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "gulp-babel": "^8.0.0",
+    "gulp-eslint": "^5.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Simple HTML</title>
+    <style>
+        .callout {
+            border: solid 1px #ff0080;
+            margin: 2px 4px;
+            padding: 2px 6px;
+        }
+
+        .code {
+            background: #ccc;
+            margin: 1px 2px;
+            padding: 1px 4px;
+            font-family: monospace;
+        }
+        .highlight {
+            background: #ff0;
+            font-style: italic;
+        }
+    </style>
+    <script>
+        function printDOM(node, prefix){
+            console.log(prefix + node.nodeName);
+            for(let i=0; i<node.childNodes; i++){
+                printDOM(node, childNodes[i], prefix + '\t');
+            }
+        }
+        printDOM(document, '');
+        //위의 함수는 document에서 시작해 DOM 전체를 순회(traverse)하면서
+        //콘솔에 출력하는 함수이다.
+
+        //아래는 책에서 나온것 처럼 
+        // https://developer.mozilla.org/en-US/docs/Web/API/Document/createTreeWalker
+        //위의 사이트를 참고 했는데 왜 안된건지 모르겠다.
+        // var treeWalker = document.createTreeWalker(
+        //     document.body,
+        //     NodeFilter.SHOW_ELEMENT,
+        //     { acceptNode: function (node) { return NodeFilter.FILTER_ACCEPT; } },
+        //     false
+        // );
+
+        // var nodeList = [];
+
+        // while (treeWalker.nextNode()) nodeList.push(treeWalker.currentNode);
+        // console.log(nodeList);
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1>Simple HTML</h1>
+    </header>
+    <div id="content">
+        <p>This is a <i>simple</i> HTML file.</p>
+        <div class="callout">
+            <p>This is as fancy as we'll get!</p>
+        </div>
+<!--  여기서 버튼 추가 (여기서 데이터 속성의 이름은 action, contains를 사용한다.) -->
+        <div>
+            <button data-action="highlight" data-containing="unique">
+                Highlight paragraphs containing "unique"
+            </button>
+            <button data-action="removeHighlights">
+                Remove highlights
+            </button>
+        </div>
+        
+        <p>IDs (such as <span class="code">#content</span>)
+            are unique (there can only be one per page).</p>
+        <p>Classes (such as <span class="code">.callout</span>)
+            can be used on many elements.</p>
+        <div id="callout2" class="callout fancy">
+            <p>A single HTML element can have multiple classes.</p>
+        </div>
+    </div>
+
+    <script>        
+    //head에 넣으면 아래의 모든 값이 null값으로 나온다.
+    console.log(document.getElementById('content')); 
+    const callouts = document.getElementsByClassName('callout'); //callout, callout fancy도 검색됨.
+    console.log(callouts);
+    const paragraphs = document.getElementsByTagName('p'); //p태그가 5개 있다고 나옴.
+    console.log(paragraphs);
+    console.log(document.querySelectorAll('.callout')); //callout 클래스를 전부 불러온다.
+    ///////
+    //DOM 요소조작
+    const para1 = document.getElementsByTagName('p')[0];
+    console.log(para1.textContent);
+    console.log(para1.innerHTML);
+    para1.textContent = "Modified HTML file"; //브라우저에서 확인해보자
+    para1.innerHTML = "Modified HTML file"; //브라우저에서 확인해보자
+    console.log(para1.textContent+'   111');
+    console.log(para1.innerHTML+'   111');
+    //https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_node_textcontent
+    //위의 예제가 textContent와 innerHTML을 비교하는 좋은 예제이다.
+    /////////////////
+    //새 DOM 요소 만들기(하나는 첫문단, 나머진 끝문단)
+    const p1 = document.createElement('p');
+    const p2 = document.createElement('p');
+    p1.textContent = "I was created dynamically";
+    p2.textContent = "I was also created dynamically";
+    //부모 DOM 요소 <div id="content"> 와 그 첫번째 자식을 찾는다.
+    const parent = document.getElementById('content');
+    const firstChild = parent.childNodes[0];
+    //요소를 삽입한다.
+    parent.insertBefore(p1, firstChild); //첫번째는 삽입할 요소, 두번째는 삽입할 위치
+    parent.appendChild(p2);
+    ///////////////
+    //요소 스타일링
+    //style에 .highlight 를 추가한다.
+    //<p>태그를 모두 찾고, unique가 들어있다면 highlight클래스를 추가한다.
+    //모든 요소에는 클래스를 나열하는 classList 프로퍼티가 있다. 
+    //classList의 add메서드로 클래스를 추가할 수 있다.
+    function highlightParas(containing){
+        if(typeof containing === 'string')
+            containing = new RegExp(`\\b${containing}\\b`,'i'); //입력한 단어만 남김
+        const paras = document.getElementsByTagName('p'); //p태그 검색
+        for(let p of paras){
+            if(!containing.test(p.textContent)) continue; //입력한 단어가 textcontent에 있음(그냥문자)
+            p.classList.add('highlight');   //여기서 p의 클래스요소 즉, 위에서 선택한 
+        }                                   //<p> 태그에 CSS클래스 요소가 추가됨.
+    }
+    // highlightParas('unique'); //만든함수 사용
+    //스타일 클래스 추가한 것을 삭제할떄 (classList.remove()를 사용한다.)
+    function removeParaHighlights(){
+        const paras = document.querySelectorAll('p.highlight');
+        for(let p of paras){
+            p.classList.remove('highlight'); //클래스리스트에서 삭제
+        }
+    }
+    //removeParaHighlights(); //이걸 주석처리하면 클래스 추가됨. 삭제하면 없어짐.
+    /////////////////////////
+    //데이터 속성
+    //버튼이 하나만 있으므로 querySelectorAll 대신 querySelector를 써도 되지만,
+    //querySelectorAll를 쓰면 여러 요쇼가 한가지 기능을 하게 만든다. 즉, 클릭한방으로 여러개가 바뀜
+    const highlightActions = document.querySelectorAll('[data-action="highlight"]');
+    //아래처럼 highlightAction의 요소를 보면 dataset 프로퍼티가 있는걸 알 수 있다.
+    console.log(highlightActions[0].dataset); 
+    // DOMStringMap { containing: "unique", action: "highlight" }  이렇게 뜸
+    //** DOMStringMap이란 이름에서 짐작할 수 있듯이.. DOM API는 데이터 속성의 값을 문자열 형태로
+    // 저장하므로 객체데이터는 저장할 수 없다. 제이쿼리에서는 데이터 속성의 기능을 확장하는 
+    // 인터페이스를 만들어서 객체도 데이터 속성에 저장할 수 있게 만들었다. 다음장에 나온다.
+
+    //giraffe 단어가 있는 문단을 하이라이트하되 대소문자를 구분하여 찾으려 한다면 아래같이 해주면 된다.
+    // highlightActions[0].dataset.containing = "giraffe";
+    // highlightActions[0].dataset.caseSensitive = "true";
+    // console.log(highlightActions[0].dataset);
+    
+    /////////////////////////////////
+    //이벤트
+    //클릭 이벤트로 하이라이트 버튼과 highlightParas 함수를 연결해보자
+    //const highlightActions = document.querySelectorAll('[data-action="highlight"]');
+    for(let a of highlightActions){
+        a.addEventListener('click', evt => {
+            evt.preventDefault();
+            highlightParas(a.dataset.containing);
+        });
+    }
+
+    const removeHighlightActions = document.querySelectorAll('[data-action="removeHighlights"]');
+    for(let a of removeHighlightActions){
+        a.addEventListener('click', evt => {
+            evt.preventDefault();
+            removeParaHighlights();
+        });
+    }
+    </script>
+</body>
+
+</html>

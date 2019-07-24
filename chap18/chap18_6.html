@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <body>
+            <!-- 아래 데이터속성을 이용하여 ajax서버에서 데이터를 가져온다. 
+            ??? 는 텍스트로 받는 부분이다.-->
+            <div class="serverInfo">
+                Server is running on <span data-replace="platform">???</span>
+                with Node <span data-replace="nodeVersion">???</span>. It has
+                been up for <span data-replace="uptime">???</span> seconds.
+            </div>
+            <!-- 위에 서버에서 가져온 정보를 표시할 곳을 만들었으니 XMLHTTPRequest를 써서
+            Ajax 호출을 보낼 수 있다. load 이벤트는 객체를 불러올 때 이벤트 발생-->
+            <script>
+            //아래의 스크립트는 기본적인 Ajax 호출을 보낸다.**
+            //1. 먼저 XMLHttpRequest 객체를 만들고, Ajax호출이 성공했을 때 발생할 load이벤트에
+            //대한 이벤트 리스너를 만들었다. 서버 응답인 this.responseText를 콘솔에 출력
+            //2. 다음에 open을 호출해 서버에 실제 연결한다.
+            //(이 함수에서는 브라우저에서 웹 페이지에 방문할 떄 사용하는 것과 같은 HTTP GET
+            //요청을 쓴다고 명시하고, 서버URL을 넘겼다.)
+            //3. 마지막으로 send를 호출하여 요청을 실행했다.
+            //(아래의 예제에서는 서버에 아무 데이터도 보내지 않았지만 원한다면 보낼 수 있다.)
+                function refreshServerInfo(){
+                    const req = new XMLHttpRequest();
+                    req.addEventListener('load', function(){
+                        //@@https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event 참조하자
+                        //window.addEventListener('load', (event) => {   는
+                        //window.onload = (event) => {    와 같은 것이다 (server에서 보낸 메시지 받음)
+
+                        //TODO:값을 HTML에 삽입하는 것은 나중에 한다.
+                        console.log(this.responseText, typeof this.responseText);
+                        //this.responseText 데이터를 HTML에 삽입해보자
+                        //HTML을 만들때 데이터 속성 replace(data-replace)가 있는 element만 찾고,
+                        //그 element의 컨텐츠를 객체에서 뽑아낸 데이터로 교체할 수 있게 만든다.
+                        //서버에서 반환한 객체의 프로퍼티를 Object.keys를 통해 순회시키고,
+                        //replace-data 속성이 일치하는 element가 있으면 그 콘텐츠를 교체하면 된다.
+
+                        //this.responseTExt는 JSON이 들어있는 문자열이다.
+                        //JSON.parse를 써서 문자열 -> 객체 
+                        const data = JSON.parse(this.responseText);
+                        console.log(data, typeof data);
+
+                        //이 예제에서는 클래스가 serverInfo인 <div>의 텍스트만 교체한다.
+                        //document 객체를 통해 DOM에 접근
+                        const serverInfo = document.querySelector('.serverInfo');
+
+                        //서버에는 반환한 객체를 키 기준으로 순회한다.
+                        Object.keys(data).forEach(p => {
+                            //텍스트를 교체할 요소를 찾는다.
+                            const replacements = serverInfo.querySelectorAll(`[data-replace="${p}"]`);
+                        //서버에서 받은 값으로 텍스트를 교체한다.
+                        for(let r of replacements){
+                            r.textContent = data[p];
+                        }
+                        });
+                    });
+                    req.open('GET', 'http://localhost:8080', true);
+                    req.send();
+                }
+                //refreshServerInfo는 함수이므로 언제든지 호출할 수 있다.
+                //uptime 필드는 서버가 얼마나 오래 열려 있었는지 나타내므로,
+                //이런 정보는 주기적으로 업데이트 해야할 수 있다.
+                //setInterval을 이용하여 200밀리초마다 업데이트를 해보자
+                setInterval(refreshServerInfo, 200);
+            </script>
+        </body>
+    </head>
+</html>
