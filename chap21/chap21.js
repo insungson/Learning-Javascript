@@ -412,3 +412,90 @@
 // // { name: 'Walt', redPhosphorus: 100, water: 500, a: 10 }
 // // property set: water = 777
 // // { name: 'Walt', redPhosphorus: 100, water: 777, a: 10 }
+
+
+//////////////////////////////////////////////////////////////
+//ES2015(ES6) Proxy (https://www.zerocho.com/category/EcmaScript/post/57ca5f053316f61500c4f902)
+//프록시 : 타겟(target)과 핸들러(handler)로 구성되어 있습니다. 
+//         타겟(target)은 목표하는 객체이고, 
+//         핸들러(handler)는 추가 또는 수정할 기능을 적는 부분입니다. 
+//         (또는 가로챈다고도 표현합니다.
+//         원래라면 기존 객체에 반영되어야 할 사항이 프록시 객체에 대신 반영되기 때문이죠.)
+//
+//핸들러의 옵션으로는 get, set, has, deleteProperty, apply, construct, getOwnPropertyDescriptor, 
+//defineProperty, getPrototypeOf, setPrototypeOf, ownKeys, perventExtensions, isExtensible이 있습니다. 
+//옵션이 많지만 잘 보면 모두 Object의 메소드이거나 getter, setter, delete 등을 나타내는 것을 알 수 있습니다. 
+//각각의 행동을 할 때 해당 핸들러가 실행됩니다.
+const target = {};
+const handler = {
+    get : function(obj,name){
+        return `안녕 ${name}`;
+    }
+};
+const proxy = new Proxy(target, handler);
+console.log(proxy.zero); //안녕 zero
+console.log(target.zero); //undefined
+
+// get은 속성 값을 가져올 때 무슨 행동을 할 지 설정할 수 있습니다. 
+//프록시를 설정하니까 target에 아무 속성이 들어있지 않았는데도 handler의 get 메소드에서 설정한 대로 표현됩니다.
+
+// set도 볼까요? set은 이름대로 속성 값을 설정할 때 무슨 행동을 할 지 보여줍니다.
+const target1 = {};
+const handler1 = {
+    set : function(obj,name,value){
+        console.log(`${name}가 ${value}로 설정되었습니다.`);
+    }
+};
+const proxy1 = new Proxy(target1,handler1);
+proxy1.zero1 = 'Zero'; //zero1가 Zero로 설정되었습니다.
+console.log(target.zero1)//undefined
+//원래라면 target의 zero 속성에 'Zero' 값이 들어가야하지만 프록시가 가로채서 프록시 객체에 반영했습니다. 
+//그리고 원래라면 속성에 값만 설정하고 끝났겠지만, 기능을 확장하여 console.log까지 하게 되었습니다.
+//이렇게 프록시는 재정의한다 또는 가로챈다는 의미가 있습니다.
+
+// 함수도 프록시 객체를 쓸 수 있습니다
+const target2 = function(a,b){return a+b}
+const handler2 = {
+    apply : function(target,thisArg,argList){
+        return target.apply(thisArg,argList);
+    }
+};
+const proxy2 = new Proxy(target2,handler2);
+console.log(proxy2(3,5)); //8
+console.log(proxy2);//[Function: target2]
+//apply 옵션은 함수를 호출할 때 그 행동을 가로채 프록시 객체에 대신 호출합니다.
+
+//construct옵션은 new를 통해 객체를 생성할 때 실행됩니다.
+const target3 = function(name){
+    this.name = name;
+}
+const handler3 = {
+    construct : function(target,args){
+        console.log('객체를 생성합니다.');
+        return new target(...args);
+    }
+};
+const proxyObj = new Proxy(target3,handler3);
+var test = new proxyObj('Zero'); //객체를 생성합니다.
+console.log(test); //target3 { name: 'Zero' }
+//위와 같이 프록시를 사용하여 객체 생성을 재정의할 수 있습니다.
+
+//프록시는 다양한 환경에서 사용될 수 있습니다. 위의 객체 생성 코드를 응용하면 상속도 만들 수 있고요. 
+//한 가지 예를 들자면 set을 활용한 검증기가 있습니다. 제공된 인자가 올바른 자료형이 맞는 지 검사하는 겁니다.
+const target4 = {};
+const handler4 = {
+    set : function(target,name,value){
+        if(name === 'onlyNumber'){
+            if(!Number.isInteger(value)){
+                throw new TypeError('onlyNumber 필드에는 정수만 입력해주세요');
+            }
+        }
+    }
+};
+const proxy3 = new Proxy(target4,handler4);
+proxy3.onlyNumber = 'hi'; //TypeError: onlyNumber 필드에는 정수만 입력해주세요
+//console.log(proxy3.onlyNumber = 3); //3
+
+//위는 한 가지의 예시일 뿐이고, 여러분의 상상력에 따라 다양하게 활용할 수 있습니다. 
+//프록시 자체가 객체의  여러가지 기능을 확장할 수 있게 해주니까요. 
+//어떤 특정 동작을 할 때마다 설정해 둔 핸들러가 실행되기 때문에 자동화 작업에도 사용할 수 있을 것 같습니다

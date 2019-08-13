@@ -1,0 +1,11 @@
+<script>
+function Person(name, gender) {
+    this.name = name;
+    this.gender = gender;
+  }
+  Person.prototype.sayHello = function() {
+    alert(this.name + ' said "hello"');
+  };
+  var ex = new Person('Nero', 'm');
+  console.log(ex);
+</script>

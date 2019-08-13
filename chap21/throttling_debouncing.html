@@ -1,0 +1,43 @@
+<input id="input" />
+<input id="input1" />
+<input id="input2" />
+
+<script>
+    //쓰로틀링: 마지막 함수가 호출된 후 일정 시간이 지나기 전에 다시 호출되지 않도록 하는 것
+    //디바운싱: 연이어 호출되는 함수들 중 마지막 함수(또는 제일 처음)만 호출하도록 하는 것
+    //위 두 개는 underscore(_)에도 있는 기능입니다. 
+    //underscore나 lodash를 쓰고 계신 분들이라면 그 라이브러리의 메소드를 쓰시면 편합니다.
+    //바운싱은 주로 ajax 검색에 자주 쓰입니다. 쓰로틀링은 스크롤을 올리거나 내릴 때 보통 사용합니다
+
+    //<디바운싱>
+    document.querySelector('#input').addEventListener('input',function(e){
+        console.log('여기에 ajax 요청', e.target.value);
+    });
+    //위의 코드는 input태그에 입력할때마다 동작하기 때문에  유료 API를 사용했을 때 큰 문제가 됩니다. 
+    //만약 구글지도 API같은 것을 사용할 때 위와 같이 쿼리를 10번 날리면 어마어마한 손해입니다
+    //아래와 같이 바꿔보자
+    var timer;
+    document.querySelector('#input1').addEventListener('input', function(e){
+        if(timer){
+            clearTimeout(timer);
+        }
+        timer = setTimeout(function(){
+            console.log('여기에 ajax1 요청', e.target.value);
+        },1000);
+    });
+    //위의 코드는 1초동안 입력안하면 그때 콘솔이 뜬다. 완성 후 뜨게 되는 것이다.
+
+    //스크롤을 올리거나 내릴 때 scroll 이벤트가 매우 많이 발생합니다. 
+    //scroll 이벤트가 발생할 때 뭔가 복잡한 작업을 하도록 설정했다면 매우 빈번하게 실행되기 때문에 
+    //엄청 렉이 걸릴 것입니다. 그럴 때 쓰로틀링을 걸어줍니다. 몇 초에 한 번, 또는 몇 밀리초에 한 번씩만 
+    //실행되게 제한을 두는 것이죠
+    var timer1;
+    document.querySelector('#input2').addEventListener('input',function(e){
+        if(!timer1){
+            timer1 = setTimeout(function(){
+                timer1 = null;
+                console.log('여기에 ajax 요청2', e.target.value);
+            },500);
+        }
+    });
+</script>

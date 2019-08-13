@@ -1,0 +1,152 @@
+<!-- <!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Simple HTML</title>
+        <style>
+            .callout{
+                border: solid 1px #ff0080;
+                margin: 2px 4px;
+                padding: 2px 6px;
+            }
+            .code{
+                background: #ccc;
+                margin: 1px 2px;
+                padding: 1px 4px;
+                font-family: monospace;
+            }
+            .highlight{
+                background: #ff0;
+                font-style: italic;
+            }
+        </style>
+        <script>
+            function printDOM(node,prefix){
+                console.log(prefix + node.nodeName);
+                for(let i = 0; i<node.childNodes; i++){
+                    printDOM(node.childNodes[i], prefix+'\t');
+                }
+            }
+            printDOM(document,'');
+        </script>
+    </head>
+
+    <body>
+        <header>
+            <h1>Simple HTML</h1>
+        </header>
+        <div id="content">
+            <p>This is a <i>simple</i> HTML file.</p>
+            <div class="callout">
+                <p>This is as fancy as we'll get!</p>
+            </div>
+            <div>
+                <button data-action="highlight" data-containing="unique">
+                    Highlight paragraphs containing "unique"
+                </button>
+                <button data-action="removeHighlights">
+                    Remove highlights
+                </button>
+            </div>    
+            <p>IDs (such as <span class="code">#content</span>)
+                are unique (there can only be one per page).</p>
+            <p>Classes (such as <span class="code">.callout</span>)
+                can be used on many elements.</p>
+                <div id="callout2" class="callout fancy">
+                    <p>A single HTML element can have multiple classes.</p>
+                </div>
+            </div>
+            <script>
+                console.log(document.getElementById('content'));
+                console.log(document.getElementsByClassName('callout'));
+                const para1 = document.getElementsByTagName('p')[0];
+                console.log(para1.innerHTML);
+                console.log(para1.textContent);
+
+                const p1 = document.createElement('p');
+                const p2 = document.createElement('p');
+                p1.textContent = '첫번째 p태그 내부문자 생성';
+                p2.textContent = '두번째 p태그 내부문자 생성';
+                const parent = document.getElementById('content');
+                const firstChild = parent.childNodes[0];
+                parent.insertBefore(p1,firstChild);
+                parent.appendChild(p2);
+
+                function highlightParas(containing){
+                    if(typeof containing === 'string'){
+                        containing = new RegExp(`\\b${containing}\\b`,'i');
+                    }
+                    const paras = document.getElementsByTagName('p');
+                    for(let p of paras){
+                        if(!containing.test(p.textContent)){continue}
+                        p.classList.add('highlight')
+                    }
+                }
+                //highlightParas('unique');
+                function removeHighlights(){
+                    const paras = document.querySelectorAll('p.highlight');
+                    for(let a of paras){
+                        a.classList.remove('highlight');
+                    }
+                }
+                //removeHighlights();
+                const highlightActions = document.querySelectorAll('[data-action="highlight"]');
+                console.log(highlightActions[0].dataset);
+                for(let a of highlightActions){
+                    a.addEventListener('click', function(evt){
+                        evt.preventDefault();
+                        highlightParas(a.dataset.containing);
+                    });
+                }
+                const removeHighlightsActions = document.querySelectorAll('[data-action="removeHighlights"]');
+                console.log(removeHighlightsActions[0].dataset);
+                for(let a of removeHighlightsActions){
+                    a.addEventListener('click', function(evt){
+                        evt.preventDefault();
+                        removeHighlights();
+                    })
+                }
+            </script>
+    </body>
+</html> -->
+
+
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Event Propagation</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <div>
+            <button>Click Me!</button>
+        </div>
+        <script>
+            function logEvent(handlerName,type,cancel,stop,stopImmediate){
+                return function(evt){
+                    if(cancel){evt.preventDefault();}
+                    if(stop){evt.stopPropagation();}
+                    if(stopImmediate){evt.stopImmediatePropagation()}
+                    console.log(`${type} : ${handlerName}` + (evt.defaultPrevented ? ' (cancel)' : ''));
+                }
+            }
+            function addEventLogger(elt,type,action){
+                const capture = type === 'capture';
+                elt.addEventListener('click',logEvent(elt.tagName,type,action==='cancel',action==='stop',action==='stop!'),
+                capture);
+            }
+            const body = document.querySelector('body');
+            const div = document.querySelector('div');
+            const button = document.querySelector('button');
+
+            addEventLogger(body, 'capture');
+            addEventLogger(body, 'bubble');
+            addEventLogger(div, 'capture');
+            addEventLogger(div, 'bubble','cancel');
+            addEventLogger(button, 'capture');
+            addEventLogger(button, 'bubble');
+        </script>
+    </body>
+</html>

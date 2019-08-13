@@ -205,6 +205,9 @@
 
 // //프로미스 만들기
 // //프로미스는 resolve(성공)과 reject(실패) 콜백이 있는 함수로 새 promise인스턴스를 만듦면 된다.
+// //resolve, reject를 typeof 로 찍어보면 function으로 나오는 것을 확인할 수 있고 문자열이나 데이터만 넣어도
+// //데이터를 보낼 수 있다.
+// //반면 resolve, reject의 데이터를 받을 then, catch 는 함수가 아니기 때문에 함수를 넣어야 한다.
 // //아래의 코드를 보자 매개변수를 받아서 5초 카운트다운에 매이지 않게하고, 카운트다운이 끝나면
 // //프로미스를 반환하게 한다.
 // function countdown(seconds){
@@ -420,7 +423,7 @@
 // const c = new Countdown(5, true)
 //     .on('tick', i => console.log(i + "......"));
 // c.go()          //참고로 여기도 체인을 걸어서 실행해도 잘 된다.
-//     .then(launch)
+//     .then(launch) //launch를 먼저써야 뒤에서 In orbit 메시지를 받을 수 있다.
 //     .then(function(msg){ //이부분이 In orbit이 뜨게 한다.
 //         console.log(msg); 
 //     })
@@ -461,7 +464,7 @@
 //     }
 //     go(){
 //         const countdown = this;
-//         const timeoutId = [];
+//         const timeoutId = [];    //clearTimeout을 사용하기 위해 []로 묶었다.
 //         return new Promise(function(resolve,reject){
 //             for(let i=countdown.seconds; i>=0; i--){
 //                 timeoutId.push(setTimeout(function(){
@@ -491,6 +494,10 @@
 // //위의 코드는 reject를 호출 안했고, 콘솔에 기록도 하지 않았다.
 // //열번 시도하면 다섯번은 영문도 모른채 실패하는 셈이다... 
 // //아래의 코드는 타임아웃을 거는 함수의 코드이다.
+// //setTimeout(function, milliseconds, param1, param2, ...)
+// //function, milliseconds : 이거 두개야 아는 것이니깐..
+// //param1, param2, ... : Additional parameters to pass to the function 
+// //
 // function addTimeout(fn, timeout){
 //     if(timeout === undefined){timeout = 1000;} //타임아웃의 기본값 설정
 //     return function(...args){

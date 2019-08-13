@@ -379,6 +379,20 @@
 
 // // *나중에 저자가 낸 연습문제 한번 풀어보자
 
+// console.log(cards.filter(function(c){return c.value === 12}));
+// // [ { suit: 'H', value: 12 },
+// //   { suit: 'C', value: 12 },
+// //   { suit: 'D', value: 12 },
+// //   { suit: 'S', value: 12 } ]
+// function cardToString(c){
+//     const suits = {'H':'\u2665', 'C':'\u2663', 'D':'\u2666', 'S':'\u2660'};
+//     const values = {1:'A', 11:'J', 12:'Q', 13:'K'};
+//     for(let i=0;i<=10;i++){
+//         values[i]=i;
+//     }
+//     return suits[c.suit]+values[c.value];
+// }
+// console.log(cards.filter(function(a){return a.value>10}).map(cardToString));
 
 
 //////////////////
@@ -628,7 +642,34 @@
 // console.log(arr11.join(' ')); //1  hello  true
 // console.log(arr11.join(' -- ')); //1 --  -- hello --  -- true --
 
+// ////////////////////////////////
+// //문자열 관련
+// //split() : 기존의 문자열에 변화를 주지는 않는다.
+// var string = "hello";
+// string.split('');
+// console.log(string.split(''));
+// console.log(string);
+// // [ 'h', 'e', 'l', 'l', 'o' ]
+// // hello
+// console.log(string.slice(1,3));
+// //el
+// var a = 'hello', b='world', c='  Programmer  ';
+// a.concat(b);
+// console.log(a);
+// console.log(a.concat(b));
+// // hello
+// // helloworld
+// console.log(c);
+// console.log(c.trim());
+// //   Programmer
+// // Programmer
+// console.log(a.toUpperCase());
+// console.log(a.toLowerCase());
+// // HELLO
+// // hello
 
+
+///////////////////////////////////////////////////
 // //reduece로 구현한 버블정렬
 // const sortingReducer = (accumulator, value) => {
 //     const nextIndex = accumulator.findIndex(i => value < i );//findIndex()는 배열을 돌며 찾으면 해당인덱스 없으면 -1
@@ -679,3 +720,112 @@
 // let input1 = [6,4,9,5];
 // console.log(input1);
 // console.log(bubble_sort(input1));
+
+
+// //////////////////////////////////////////////////////////
+// //Map,reduce 에 대해  (https://www.zerocho.com/category/JavaScript/post/5acafb05f24445001b8d796d)
+// //map 메서드는 다음과 같이 사용합니다. 
+// //=> 배열.map((요소, 인덱스, 배열) => { return 요소 });
+// //map의 기본 원리는 간단합니다. 반복문을 돌며 배열 안의 요소들을 1대1로 짝지어 주는 것입니다
+// const oneTwoThree = [1,2,3];
+// let result = oneTwoThree.map((v)=>{
+//     console.log(v);
+//     return v
+// });
+// console.log(oneTwoThree);//[ 1, 2, 3 ]
+// console.log(result);//[ 1, 2, 3 ]
+// console.log(oneTwoThree === result);//false
+// //반복문으로 요소를 순회(1, 2, 3 순서로)하면서 각 요소를 어떻게 짝지어줄지 알려줍니다. 
+// //함수가 그냥 return v를 하기 때문에 같은 값을 그대로 짝짓습니다. 
+// //알아둘 점은, map을 실행하는 배열과 결과로 나오는 배열이 다른 객체라는 것입니다. 
+// //기존 배열을 수정하지 않고 새로운 배열을 만들어냅니다. 
+// //!!!!단, 배열 안에 객체가 들어있는 경우, 객체는 공유됩니다.!!
+// result1 = oneTwoThree.map((v)=>{
+//     return v+1;
+// });
+// console.log(result1);//[ 2, 3, 4 ]
+
+// result2 = oneTwoThree.map((v)=>{
+//     if(v % 2){
+//         return '홀수';
+//     }
+//     return '짝수';
+// });
+// console.log(result2);//[ '홀수', '짝수', '홀수' ]
+
+
+// //reduce
+// //reduce 메서드는 다음과 같이 사용합니다. 
+// //배열.reduce((누적값, 현잿값, 인덱스, 요소) => { return 결과 }, 초깃값);
+
+// //위 map의 예제를 reduce로 바꿔보자
+// var result3 = oneTwoThree.reduce((acc,cur)=>{
+//     acc.push(cur%2 ? '홀수' : '짝수');
+//     return acc;
+// },[]);
+// console.log(result3);//[ '홀수', '짝수', '홀수' ]
+
+// var result4 = oneTwoThree.reduce((acc,cur)=>{
+//     if(cur%2) acc.push(cur);
+//     return acc;
+// },[]);
+// console.log(result4);//[ 1, 3 ]
+
+// //reduce는 비동기 프로그래밍을 할 때에도 유용합니다.
+// const promiseFactory = (time)=>{
+//     return new Promise((resolve,reject)=>{
+//         console.log(time);
+//         setTimeout(resolve,time);
+//     });
+// };
+// [1000, 2000, 3000, 4000].reduce((acc,cur)=>{
+//     return acc.then(()=>promiseFactory(cur));
+// },Promise.resolve());
+
+
+
+
+/////////////////////////////////////////////////////////
+//배열과 유사배열 (https://www.zerocho.com/category/JavaScript/post/5af6f9e707d77a001bb579d2)
+var array = [1, 2, 3];
+array; // [1, 2, 3]
+var nodes = document.querySelectorAll('div'); // NodeList [div, div, div, div, div, ...]
+var els = document.body.children; // HTMLCollection [noscript, link, div, script, ...]
+//array는 배열이고, nodes와 els는 유사배열입니다.
+Array.isArray(array); // true
+Array.isArray(nodes); // false
+Array.isArray(els); // false
+//직접 배열 리터럴로 선언한 array만 배열입니다
+//nodes나 els처럼 []로 감싸져있지만 배열이 아닌 친구들을 유사배열이라고 부릅니다. 
+
+//배열과 유사배열을 구분해야 하는 이유는, 유사배열의 경우 배열의 메서드를 쓸 수 없기 때문입니다
+array.forEach(function(el) { console.log(el); }); // 1, 2, 3
+els.forEach(function(el) { console.log(el); }); // Uncaught TypeError: els.forEach is not a function
+//els에 forEach같은 배열 메서드를 사용하면 에러가 발생합니다. (nodes는 프로토타입에 forEach가 있어서 됩니다.) 
+//배열이 아니므로 발생하는 것입니다. 이럴 때 메서드를 빌려 쓰는 방법이 있습니다. 
+//배열 프로토타입에서 forEach 메서드를 빌려오는 것이죠. 바로 call이나 apply입니다.
+Array.prototype.forEach.call(nodes, function(el) { console.log(el); });
+[].forEach.call(els, function(el) { console.log(el); });
+//이제 유사배열에도 forEach를 사용할 수 있습니다.
+
+//최신 자바스크립트에서는 Array.from으로 더 간단하게 할 수 있습니다.
+Array.from(nodes).forEach(function(el) { console.log(el) });
+
+//자주 보는(ES6에서는 더 이상 안 보이지만) 유사배열이 하나 더 있습니다. 
+//function의 arguments입니다. 함수선언문에 넣은 인자 목록을 표시하죠.
+function arrayLike() {
+    console.log(arguments);
+  }
+arrayLike(4, 5, 6); // Arguments [4, 5, 6, callee, Symbol]
+
+//역시 forEach같은 배열 메서드를 쓸 수 없으므로 문제가 됩니다. 위에서 설명한 방법을 적용해야 합니다
+function arrayLike() {
+    console.log(arguments);
+    [].forEach.call(arguments, function(el) { console.log(el) });
+  }
+arrayLike(4, 5, 6);
+
+//유사배열, 별 거 아니죠? 
+//1) []로 감싸져 있다고 다 같은 배열이 아니라는 것과, 
+//2) Array.isArray로 판별하는 방법, 
+//3) 배열 프로토타입에서 메서드를 빌려쓰는 방법에 대해서 알아두시면 좋습니다!

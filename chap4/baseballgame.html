@@ -1,0 +1,43 @@
+<script>
+  //prompts를 자바스크립트 콘솔로 받으려면 https://www.npmjs.com/package/prompts 패키지를 받아서 해보자
+var list =[];
+for(let a =0;a<10;a++){
+  list.push(a);
+}
+var number = [];
+for(let a=0;a<4;a++){
+  var select = Math.floor(Math.random()*list.length);
+  number[a] = list.splice(select,1)[0];
+}
+var strike=0;
+var ball=0;
+var count=1;
+while(count<=10){
+  var input = prompt('숫자 4개를 연달아 입력하세요');
+  var inputArray = input.split('');
+  strike=0;
+  ball=0;
+  count++;
+  for(let a=0;a<4;a++){
+    for(let b=0;b<4;b++){
+      if(number[a] == inputArray[b]){
+        if(a === b){
+          strike++;
+        }else{
+          ball++;
+        }
+        break; //생략해도 되지만 불필요한 비교는 관두고 다음으로 넘어가기위한 break(효율성증대)
+      }
+    }
+  }
+  if(strike === 4){
+    console.log('홈런!' + (count-1)+'번 만에 맞추셨습니다.');
+    break;
+  }else if(count>10){
+    console.log('정답은 '+ number +' 입니다.');
+    console.error('시도횟수 10회가 초과하였습니다.');
+  }else{
+    console.info(inputArray.join('')+': '+strike+' 스트라이크'+ball+' 볼');
+  }
+}
+</script>

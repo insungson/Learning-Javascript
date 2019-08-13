@@ -6,6 +6,13 @@ console.log(x.toFixed(2)); //19.51
 console.log(x.toFixed(1)); //19.5
 console.log(x.toFixed(0)); //20
 //이 숫자는 버림이 아니라 반올림이다.(round)
+//Math.floor(값) : 소숫점 내림
+//Math.ceil(값) : 소숫점 올림
+//Math.round(값) : 소숫점 반올림
+console.log(Math.floor(x));//19
+console.log(Math.ceil(x));//20
+console.log(Math.round(x));//20
+
 
 //지수표기법
 //toExponential()

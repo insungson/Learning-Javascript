@@ -112,7 +112,7 @@ const s1 = n.toString(); //String 으로 형 변환 함.
 console.log(typeof s1);
 
 // 번외!!
-// argument 와 parameter의 차이
+// argument 와 parameter 의 차이
 // argument : 함수를 호출할 때 인자로 넣어주는 값
 // parameter : 호출받은 함수가 요소로 받는 값
 function sumOf(x,y) {
@@ -126,6 +126,34 @@ console.log(sumOf(1)); // 결과 : 1
 console.log(sumOf(1,2));// 결과 : 3
 console.log(sumOf(1,2,3));// 결과 :6
 console.log(sumOf(1,2,3,4,5));// 결과 :15
+
+//@@@arguments에 대해 알아보자@@!!!
+//함수에는 arguments라는 변수에 담긴 숨겨진 유사 배열이 있다. 이 배열에는 함수를 호출할 때 입력한 인자가 담겨있다
+//arguments는 사실 배열은 아니다. 실제로는 arguments 객체의 인스턴스다.
+function example() {
+    console.log(arguments);
+}
+example(1, 'string', true); // [1, 'string', true]
+//함수에 들어온 인자를 배열 형식으로(배열은 아닙니다. 유사 배열이라고 부릅니다.) 리턴하기 때문에 
+//[] 배열안에 들어온 것이다.
+//
+function example2() {
+    console.log(arguments.join());
+}
+example2(1, 'string', true); // Uncaught TypeError: arguments.join is not a function
+//arguments는 모양만 배열이지 실제 배열이 아니라서 배열의 메소드를 쓰면 에러가 발생합니다. 
+//이 때 바로 call이나 apply가 효력을 발휘합니다.
+//
+function example3() {
+    console.log(Array.prototype.join.call(arguments));
+}
+example3(1, 'string', true); // '1,string,true'
+//배열의 프로토타입에 있는 join 함수를 빌려 쓰는겁니다. 
+//this는 arguments를 가리키게 하고요. 
+//join 외에도 slice, concat 등등 모든 메소드를 이 방식으로 사용할 수 있습니다.
+
+
+
 
 //자바스크립트의 유연함이 보인다.
 //함수에서 선언하지 않은 파라메터까지도 모두 받아서 연산이 가능하다..

@@ -17,8 +17,8 @@
                     if(stop) evt.stopPropagation();
                     if(stopImmediate) evt.stopImmediatePropagation();
                     console.log(`${type}: ${handlerName}` + 
-                    (evt.defaultPrevented ? ' (canceled)' : ''));
-                }
+                    (evt.defaultPrevented ? ' (canceled)' : '')); 
+                }//defaultPrevented 는 preventDefault가 실행되었는지 아닌지 판별한다..ㅠ.ㅠ 이것때문에 삽질..
             }
             //이벤트 핸들러를 요소에 추가한다.
             function addEventLogger(elt, type, action){
@@ -31,12 +31,12 @@
             const div = document.querySelector('div');
             const button = document.querySelector('button');
             //캡처링과 버블링에서 이벤트핸들링
-//             addEventLogger(body, 'capture');
-//             addEventLogger(body, 'bubble');
-//             addEventLogger(div, 'capture');
-//             addEventLogger(div, 'bubble');
-//             addEventLogger(button, 'capture');
-//             addEventLogger(button, 'bubble');
+            addEventLogger(body, 'capture');
+            addEventLogger(body, 'bubble');
+            addEventLogger(div, 'capture');
+            addEventLogger(div, 'bubble');
+            addEventLogger(button, 'capture');
+            addEventLogger(button, 'bubble');
 // // capture: BODY
 // // capture: DIV
 // // capture: BUTTON
@@ -81,12 +81,12 @@
 // //이 메서드는 이벤트를 현재 요소에서 끝내고 더는 전달되지 않게 막는다.
 
 //버튼 캡처 단계에서 즉시 멈추게 해보자
-            addEventLogger(body, 'capture');
-            addEventLogger(body, 'bubble');
-            addEventLogger(div, 'capture', 'cancel');
-            addEventLogger(div, 'bubble');
-            addEventLogger(button, 'capture', 'stop!');
-            addEventLogger(button, 'bubble');
+            // addEventLogger(body, 'capture');
+            // addEventLogger(body, 'bubble');
+            // addEventLogger(div, 'capture', 'cancel');
+            // addEventLogger(div, 'bubble');
+            // addEventLogger(button, 'capture', 'stop!');
+            // addEventLogger(button, 'bubble');
 // capture: BODY
 // capture: DIV (canceled)
 // capture: BUTTON (canceled)

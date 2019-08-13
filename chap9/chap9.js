@@ -181,10 +181,11 @@
 // }
 // function Developer(){
 //     Job.call(this, '프로그래머'); 
-//     //6장 함수에서 배운 call()메서드를 써서 Job함수의 값을 바꾼다.
+//     //6장 함수에서 배운 call()메서드를 써서 Job의 this.name을 가져오고 name에 '프로그래머'를 넣는다.
 // }
 // Developer.prototype = Object.create(Job.prototype); //Developer{}객체 생성 
 // //(객체의 프로토타입에 job 추가 == 상속시킨것과 같은 효과)
+// //(Job의 프로토타입을 Developer의 프로토타입에 연결한다.)
 // Developer.prototype.constructor = Developer; //Developer{}객체에 constuctor 프로퍼티추가(super와 같은 효과)
 // Developer.prototype.coding = function(){ //Developer{}객체에 coding 프로퍼티추가
 //     console.log(` 코딩을 합니다. `);
@@ -779,3 +780,326 @@
 // //위와 같이 Car 클래스의 키값이 symbol로 들어가기 때문에 충돌은 없다!!
 // //메서드 이름에는 일반적인 문자열을 쓰고 데이터 프로퍼티에는 _POLICY 같은 심볼을 쓰는 절충안이다.
 // //입력한 값을 출력하기 위해선 String(인스턴스), .toString(인스턴스) 를 통해 명시적으로 문자열로 바꿔야한다.
+
+
+
+/////////////////////////////////////////////////////
+//prototype 관련 !! _proto_  관련
+
+// function Person(name, gender) {
+//     this.name = name;
+//     this.gender = gender;
+//   }
+//   Person.prototype.sayHello = function() {
+//     alert(this.name + ' said "hello"');
+//   };
+//   var ex = new Person('Nero', 'm');
+//   console.log(ex);
+
+// // 아래가 prototype을 쓸때의 구조이다.
+// // Person
+// //     gender: "m"
+// //     name: "Nero"
+// //     __proto__:
+// //         sayHello: ƒ ()
+// //         constructor: ƒ Person(name, gender)
+// //         __proto__: Object
+
+// prototype 객체는 사전 그대로 원형을 뜻합니다. 원래의 모습이죠. 
+// 같은 생성자로부터 만들어진 객체들은 모두 이 원형 객체를 공유합니다. 
+// 따라서 Person의 prototype 객체에 sayHello라는 메소드를 넣으면 Person 생성자로 
+// 만든 모든 객체는 이 메소드 사용이 가능합니다. 공유하고 있기 때문이죠.
+// @@@그런데 this.sayHello보다 prototype에 Person.prototype.sayHello로 넣는 게 더 효율적입니다.
+// @@@prototype은 모든 객체가 공유하고 있어서 한 번만 만들어지지만, this에 넣은 것은 객체 하나를 
+// @@@만들 때마다 메소드도 하나씩 만들어지기 때문에 불필요한 메모리 낭비가 발생합니다.
+
+
+// 1) constructor는 생성자 함수 그 자체를 가리킴
+// 2) prototype은 생성자 함수에 정의한 모든 객체가 공유할 원형
+// 3) __proto__는 생성자 함수를 new로 호출할 때, 정의해두었던 prototype을 참조한 객체
+// 4) prototype은 생성자 함수에 사용자가 직접 넣는 거고, __proto__는 new를 호출할 때 
+//    prototype을 참조하여 자동으로 만들어짐
+// 5) 생성자에는 prototype, 생성자로부터 만들어진 객체에는 __proto__
+// 6) 따라서 사용자는 prototype만 신경쓰면 된다. __proto__는 prototype이 제대로 구현되었는지 확인용으로 사용한다.
+
+
+//@@@prototype, __proto__와 constructor의 관계@@@
+//prototype과 constructor는 부모자식 관계라고 생각하면 됩니다.
+Person.prototype === (Person생성자로 만들어진 객체).__proto__;
+Person.prototype.constructor === Person;
+(Person생성자로 만들어진 객체).__proto__.constructor === Person;
+//3단 명제!!
+
+
+
+///////////////////////////////
+//상속에 대해 추가사항
+
+function Vehicle(name, speed) {
+    this.name = name;
+    this.speed = speed;
+  }
+  Vehicle.prototype.drive = function () {
+    console.log(this.name + ' runs at ' + this.speed)
+  };
+//Vehicle 클래스의 tico객체를 만들어 적용시킴
+  var tico = new Vehicle('tico', 50);
+  tico.drive(); // 'tico runs at 50'
+//
+// Sedan 클래스를 만들고 Vehicle 클래스의 생성자(constructor)을 가져온다.
+  function Sedan(name, speed, maxSpeed) {
+    Vehicle.apply(this, arguments)
+    this.maxSpeed = maxSpeed;
+  }
+  // Vehicle 생성자에 this와 arguments를 적용하라는 코드이다.
+  // arguments는 매개변수를 의미
+  // Sedan은 매개변수로 name과 speed, maxSpeed가 있죠? 이게 그대로 Vehicle과 연결됩니다
+  // 다만, maxSpeed는 Vehicle이 갖고 있지 않기 때문에 무시되고요. 
+  // 그 후에 이제 Sedan만 갖고 있는 maxSpeed 속성을 따로 추가한거죠.
+  Sedan.prototype = Object.create(Vehicle.prototype);
+  //Sedan의 prototype과 Vehicle의 prototype을 연결하는 겁니다
+  //Object.create는 Vehicle.prototype을 상속하는 새로운 객체를 만드는 메소드입니다. 
+  //그 상속한 객체를 Sedan.prototype에 대입하니까 Sedan이 Vehicle을 상속하게 되는 거죠.
+  //
+  //@@Object.create(Vehicle.prototype)과 new Vehicle()의 차이를 알아두시면 좋습니다@@
+  //Object.create는 객체를 만들되 생성자는 실행하지 않는 겁니다. 즉 그냥 프로토타입만 넣는거죠.
+  Sedan.prototype.constructor = Sedan;
+  //오류를 수정하는 코드이다.
+  //전 시간에 생성자.prototype.constructor === 생성자여야한다는 말을 드렸었죠? 
+  //생성자의 부모의 자식을 찾아라 하면 당연히 원래 생성자가 나와야겠죠. 
+  //하지만, 이 줄을 빼고 제가 한 방법대로 상속을 하면 Sedan.prototype.constructor === Vehicle이 됩니다. 
+  //이건 어쩔 수 없는 자바스크립트의 문제입니다. 
+  //그래서 이것을 고치기 위해 Sedan.prototype.constructor에 Sedan을 다시 넣어주는 겁니다
+  Sedan.prototype.boost = function () {
+    console.log(this.name + ' boosts its speed at ' + this.maxSpeed);
+  };
+//boost라는 메소드를 Sedan에 만들었습니다
+//
+  var sonata = new Sedan('sonata', 100, 200);
+  sonata.drive(); // 'sonata runs at 100'
+  sonata.boost(); // 'sonata boosts its speed at 200'
+
+//위에서 나온 arguments는 chap3에서 참고하자
+
+
+/////////////////////////////////////
+//Object (https://www.zerocho.com/category/JavaScript/post/573dbc9370ba9c603052cc9a)
+//
+//객체.isPrototypeOf(대상) : 객체가 대상의 조상인지 알려줍니다.
+var Grandparant = function(){};
+
+var Parant = function(){};
+Parant.prototype = new Grandparant();
+Parant.prototype.constructor = Parant;
+
+var Child = function(){};
+Child.prototype = new Parant();
+Child.prototype.constructor = Child;
+
+var child = new Child();
+Parant.prototype.isPrototypeOf(child);//true
+Grandparant.prototype.isPrototypeOf(child);//true
+
+//
+//객체.toString : 가끔 객체를 alert하거나 console.log할 때 원하는 결과는 안 나오고,
+//               [object Object] 이런 게 나올 때가 있습니다. 내부적으로 toString 메소드가 호출된 결과입니다. 
+//                문자열끼리 더할 때 주로 호출됩니다. 
+//                기본적으로는 객체의 종류를 알려주고, 사용자가 임의로 바꿀 수 있습니다.
+var obj = {a:'hi',b:'zero'};
+obj.tostring();// [object Object]
+Math.tostring();// [object Math]
+obj.tostring = function(){  //임의로 바꿈.
+  return this.a + ' ' + this.b;
+};
+obj.tostring();// 'hi zero';
+obj+' cho';// 'hi zero cho'
+
+//
+//객체.valueOf : 객체의 기본 값을 의미합니다. 숫자 계산을 할 때 내부적으로 호출됩니다. 
+//               toString처럼 내부적으로 호출되기 때문에 관리하기 어렵습니다.
+var obj = {a:'hi',b:'zero'};
+obj.valueof();// { a: 'hi', b: 'zero' }
+obj+5; // '[object Object]5' <-- 내부적으로 toString이 호출됨
+obj.valueof = function(){
+  return 3;
+}
+obj+5; // 8 <-- 내부적으로 valueOf가 호출됨
+
+//
+//Object.create(prototype, 속성들) : 객체를 생성하는 방법 중 하나입니다. 
+//                                  속성들 부분은 writable, configurable, enumerable, get, set ,value의 
+//                                  옵션이 있는데 아래 defineProperties를 참고하세요.
+var obj = {}; // Object.create(Object.prototype); 과 같음
+var obj2 = Object.create(null,{
+  a:{
+    writable: true,
+    configurable: false,
+    value: 5,
+  }
+});
+obj2.a; //5
+
+//
+//Object.defineProperties(객체, 속성들), Object.defineProperty(객체, 속성, 설명)
+//: 객체의 속성을 자세하게 정의할 수 있습니다. 속성의 설명을 따로 설정할 수 있는데, 
+//  writable은 속성값을 변경할 수 있는지, enumerable은 for ... in 반복문 안에서 사용할 수 있는지, 
+//  configurable은 속성의 설명을 바꿀 수 있는지를 설정합니다. false인 경우 delete 동작도 불가능합니다. 
+//  기본적으로 writable, enumerable, configurable은 false입니다. 
+//  value는 속성의 값, get은 속성의 값을 가져올 때, set은 속성의 값을 설정할 때를 의미합니다.
+var obj = {};
+Object.defineProperties(obj, {
+  a:{
+    value:5,
+    writable:false,
+    enumerable:true,
+  },
+  b:{
+    get:function(){
+      return 'zero';
+    },
+    set:function(value){
+      console.log(this,value);
+      this.a = value;
+    },
+    enumerable:false,
+    configurable:false,
+  },
+});
+obj.a; // 5
+obj.b; // 'zero'
+obj.a = 10;
+obj.a; // writable이 false라 그대로 5
+for (var key in obj) {
+  console.log(key); // b의 enumerable이 false이니까 a만 log됨
+}
+obj.b = 15; // 15로 설정되는 대신 set의 내용이 실행됨. set의 value는 15
+obj.a; // this.a = value로 인해 15로 바뀌어야 하나 writable이 false라 무시됨
+obj.b; // 그대로 'zero'
+Object.defineProperty(obj, 'b', {
+  value: 5
+}); // Uncaught TypeError: Cannot redefine property: b
+//
+//마지막은 configurable이 false기 때문에 b 속성의 설명을 재정의할 수 없습니다.
+Object.defineProperty(obj,'c',{
+  value:{x:3,y:4},
+  writable:false,
+  enumerable:true,
+});
+obj.c; // { x: 3, y: 4 }
+obj.c = 'zero';
+obj.c; // writable이 false라 그대로 { x: 3, y: 4 }
+obj.c.x = 5; // 값이 객체인 경우 그 객체의 속성을 바꿈
+obj.c; // { x: 5, y: 4 }로 바뀜
+
+//Object.freeze, Object.seal, Object.preventExtensions
+//자세한 사항은 chap21 확인
+var frozenObj = Object.freeze(obj);
+frozenObj.a = 10;
+frozenObj.a; // 그대로 5
+delete frozenObj.c; // false
+Object.freeze(obj.c); // 이것까지 해야 내부 객체까지 완전히 얼려짐(c까지 얼려짐)
+
+var sealObj = Object.seal(obj);
+sealObj.a = 10;
+sealedObj.a; // 5로 변경이 안 되지만 writable이 true면 변경 가능
+delete sealedObj.c; // false
+
+var nonExtensible = Object.preventExtensions(obj);
+nonExtensible.d = 'new';
+nonExtensible.d; // undefined
+
+
+//Typeof 
+//배열과 null도 object로 표시되기 때문에 배열을 구분하려면 Array.isArray 메소드를 사용하고, 
+//null을 구분하려면 따로 처리해야합니다.
+//null이 object로 표시되는 것은 흔히 자바스크립트의 실수라고 여겨집니다.
+var a = 1;
+var b = 'zero';
+var c = true;
+var d = {};
+var e = [];
+var f = function() {};
+var g;
+var h = null;
+typeof a; // 'number'
+typeof b; // 'string';
+typeof c; // 'boolean';
+typeof d; // 'object';
+typeof e; // 'object';
+typeof f; // 'function';
+typeof g; // 'undefined'
+typeof h; // 'object';
+
+
+///////////////////////////////////////
+//컨택스트에 대해서 (4가지 특징)
+// 1) 먼저 전역 컨텍스트 하나 생성 후, 함수 호출 시마다 컨텍스트가 생깁니다.
+// 2) 컨텍스트 생성 시 컨텍스트 안에 변수객체(arguments, variable), scope chain, this가 생성됩니다.
+// 3) 컨텍스트 생성 후 함수가 실행되는데, 사용되는 변수들은 변수 객체 안에서 값을 찾고, 없다면 스코프 체인을 
+//    따라 올라가며 찾습니다.
+// 4) 함수 실행이 마무리되면 해당 컨텍스트는 사라집니다.(클로저 제외) 페이지가 종료되면 전역 컨텍스트가 사라집니다.
+
+var name = 'zero'; // (1)변수 선언 (6)변수 대입
+function wow(word) { // (2)변수 선언 (3)변수 대입
+  console.log(word + ' ' + name); // (11)
+}
+function say () { // (4)변수 선언 (5)변수 대입
+  var name = 'nero'; // (8)
+  console.log(name); // (9)
+  wow('hello'); // (10)
+}
+say(); // (7)
+//wow랑 say는 호이스팅 때문에 선언과 동시에 대입이 됩니다
+
+//전역 컨텍스트
+//전역 컨텍스트가 생성된 후 두 번째 원칙에 따라 변수객체, scope chain, this가 들어옵니다.
+//전역 컨텍스트는 arguments(함수의 인자를 말합니다)가 없고요. 
+//variable: 해당 스코프의 변수들입니다. name, wow, say가 있네요.
+//scope chain(스코프 체인, 자신과 상위 스코프들의 변수객체입니다): 자기 자신인 전역 변수객체입니다. 
+//this는 따로 설정되어 있지 않으면 window입니다. this를 바꾸는 방법이 바로 new를 호출하는 겁니다. 
+//(또는 함수에 다른 this 값을 bind할 수도 있습니다) bind는 chap6-2.js 참고하자
+
+//객체형식으로 나타내면 아래와 같다.
+// '전역 컨텍스트': {
+//   변수객체: {
+//     arguments: null,
+//     variable: ['name', 'wow', 'say'],
+//   },
+//   scopeChain: ['전역 변수객체'],
+//   this: window,
+// }
+
+
+//함수 컨텍스트
+// (7)번에서 say();를 하는 순간 새로운 컨텍스트인 say 함수 컨텍스트가 생깁니다
+// 'say 컨텍스트': {
+//   변수객체: {
+//     arguments: null,
+//     variable: ['name'], // 초기화 후 [{ name: 'nero' }]가 됨
+//   },
+//   scopeChain: ['say 변수객체', '전역 변수객체'],
+//   this: window,
+// }
+
+//(10)번에서 wow함수가 호출되었으니 wow 컨텍스트도 생기겠죠
+//여기서 중요한 게 lexical scoping에 따라 wow 함수의 스코프 체인은 선언 시에 이미 정해져 있습니다. 
+//따라서 say 스코프는 wow 컨텍스트의 scope chain이 아닙니다. 
+// 'wow 컨텍스트': {
+//   변수객체: {
+//     arguments: [{ word : 'hello' }],
+//     variable: null,
+//   },
+//   scopeChain: ['wow 변수객체', '전역 변수객체'],
+//   this: window,
+// }
+
+
+////////////////////////////////////
+//호이스팅 : 변수를 선언하고 초기화했을 때 선언 부분이 최상단으로 끌어올려지는 현상을 의미합니다
+console.log(zero); // 에러가 아니라 undefined
+sayWow(); // 정상적으로 wow
+function sayWow() {
+  console.log('wow');
+}
+var zero = 'zero';
+

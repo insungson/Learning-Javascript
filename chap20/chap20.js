@@ -171,3 +171,79 @@
 //ServerResponse 객체 : 쓰기 스트림 인터페이스이며 이를 통해 데이터를 클라리언트에 보낸다. 또한 파일보내기도 쉽다.
 //                      파일 읽기 스트림을 만들어 HTTP응답에 파이프로 연결하기만 하면 된다.
 //chap20_15.js에 관련 코딩을 해보자
+
+
+///////////////////////////
+//Window 관련(https://www.zerocho.com/category/JavaScript/post/573b321aa54b5e8427432946)
+//window :  브라우저 전체를 담당하는 게 Window 객체
+//document : 웹사이트만 담당하는게 Document 객체
+
+//window는 모든 객체의 조상입니다
+//전역객체(글로벌객체)라고 하는데요. 모든 객체를 다 포함하고 있기 때문에 window는 그냥 생략가능합니다.
+// var really = 'Really?'
+// window.really; // 'Really?'
+
+//window.close() : 현재 창을 닫습니다. 아까 말했듯이 window는 생략 가능하기 때문에 그냥 close(); 해도 됩니다. 
+
+//window.open() : 새 창을 엽니다. 팝업 창의 형태로도 열 수 있고 새 탭으로도 열 수 있습니다. 
+//              첫 번째 인자로 주소를 받고, 
+//              두 번째 인자로 새 탭으로 열지, 현재 탭에 열지를 설정할 수 있습니다. 
+//              세 번째 인자로 새 창에 대한 각종 설정을 전달할 수 있습니다.
+// open('https://zerocho.herokuapp.com'); // 새 탭
+// open('https://zerocho.herokuapp.com', '_self'); // 현재 탭
+// open('', '', 'width=200,height=200'); // 가로세로 200px의 팝업창
+
+//window.encodeURI() : encodeURI(한글) 한글 -> 컴파일언어
+//window.decodeURI() : decodeURI(외계어) 컴파일언어 -> 한글
+
+//////////////////////////////////////////////////////
+//Document객체
+//document.getElementById(아이디) : html에서 해당 아이디를 가진 태그를 선택
+//document.getElementsByClassName(클래스), 
+//document.getElementsByName(이름), 
+//document.getElementsByTagName(태그)
+// 클래스, 네임, 태그명을 가진 태그를 선택
+//document.querySelector(선택자), document.querySelectorAll(선택자) :  태그명[속성명=속성값, css선택자
+//document.createElement(태그명) : document에 새로운 태그를 만들 때 사용합니다. 
+//                                 만든다고 바로 생기는 게 아니라 변수를 통해 메모리에 저장됩니다
+
+/////////////////////////////////////
+//DOM
+//1) 태그.children, 태그.childNodes : 
+//  자식으로 갈 때는 children(텍스트 노드 제외)또는 childNodes(텍스트 노드 포함)를 사용합니다.
+//  document.getElementById('header')로 가리킨 태그도 document.getElementById('header').children하면
+//  #header의 자식들이 나옵니다
+//  document.getElementsByTagName('main')하면 편할 것은 왜 굳이 children 이런 것을 쓰냐고요? 
+//  한 번에 선택할 때는 getElementsByTagName같은 메소드가 더 편하지만 main의 부모를 찾아라, 
+//  또는 main의 자식들을 찾아라 할 때는 이름을 모르기 때문에 children같은 속성을 사용하는 겁니다.
+//2) 태그.parentNode, 태그.parentElement
+//  자식은 여러 개일 수 있기 때문에 children이나 childNodes같은 복수형 단어를 썼다면 부모는 
+//  항상 한명이기 때문에 단수형 parentNode입니다
+//3) 태그.innerHTML, 태그.outerHTML
+    // var footer = document.getElementsByTagName('footer')[0];
+    // footer.innerHTML; // 'hello'
+    // footer.innerHTML = 'goodbye';
+//4)태그.속성
+    // var tag = document.getElementById('header');
+    // tag.id; // 'header'
+//  태그를 선택하고 그 속성을 조회할 수 있습니다. 바꿀 수도 있고요. 
+//  id, className(class), name, value, placeholder, checked, disabled, readonly 
+//  같은 속성 값을 볼 수 있습니다.
+
+//메소드
+//1)태그.appendChild : 마지막 순서의 자식 태그로 추가됩니다.
+    // var newElement = document.createElement('div');
+    // document.body.appendChild(newElement);
+//  위의 코드처럼 하면 body의 마지막 자식 태그로 div 태그가 하나 추가됩니다.
+//2)태그.removeChild : 선택한 자식 태그를 삭제합니다.
+    // document.body.removeChild(document.body.childNodes[document.body.childNodes.length - 1]);
+//  body의 마지막 자식 태그를 삭제하는 코드입니다
+    //document.body.childNodes[document.body.childNodes.length - 1]
+//  마지막 자식 태그를 선택하는 코드고요.
+//3)태그.insertBefore : appendChild가 자식 태그로 집어넣는 거라면 insertBefore 메소드는 
+//                      자신의 형제 태그로 집어넣습니다. 자신 이전에요.
+    // var newElement = document.createElement('div');
+    // document.body.insertBefore(newElement, document.getElementById('header'));
+//  위의 코드는 부모.insertBefore(넣을 태그, 기준 태그)입니다. 위의 코드는 body의 자식으로, 
+//  header 이전에 새로 만든 div태그를 넣으라는 뜻이죠.
+

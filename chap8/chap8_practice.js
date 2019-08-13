@@ -171,3 +171,18 @@ console.log(cards.filter(function(a){return a.value>10}).map(cardToString));
 //     return pre;
 // },[]);
 // console.log(bubble_sort_reduce);//[ 1, 3, 4, 5, 10, 16, 16, 17, 49 ]
+
+
+
+// var columns = ["Date", "Number", "Size", "Location", "Age"];
+// var rows = ["2001", "5", "Big", "Sydney", "25"];
+// var result =  rows.reduce(function(result, field, index) {
+//   result[columns[index]] = field;
+//   return result;
+// }, {})
+// console.log(result);
+// // { Date: '2001',
+// //   Number: '5',
+// //   Size: 'Big',
+// //   Location: 'Sydney',
+// //   Age: '25' }

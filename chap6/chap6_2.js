@@ -1,3 +1,114 @@
+// this에 대해서 (https://www.zerocho.com/category/JavaScript/post/5b0645cc7e3e36001bf676eb)
+//브라우저 콘솔(F12)을 켜고, this를 쳐봅시다.
+this; // Window {}
+//네 window네요. 함수 안에 넣어서 해봅시다
+function a() { console.log(this); };
+a(); // Window {}
+//네. window네요(strict 모드일 경우는 undefined). 자, this는 window였습니다!
+
+//this는 기본적으로 window입니다. 그렇다면 this가 window가 아닌 경우를 외우면 되겠죠?
+var obj = {
+    a: function() { console.log(this); },
+  };
+  obj.a(); // obj
+//객체 메서드 a 안의 this는 객체를 가리킵니다. 
+//이것은 객체의 메서드를 호출할 때 this를 내부적으로 바꿔주기 때문에 그렇습니다.
+
+//단 위의 예제에서 다음과 같이 하면 결과가 달라집니다.
+var a2 = obj.a;
+a2(); // window
+//호출할 때, 호출하는 함수가 객체의 메서드인지 그냥 함수인지가 중요합니다. 
+//a2는 obj.a를 꺼내온 것이기 때문에 더 이상 obj의 메서드가 아닙니다.
+
+var obj2 = { c: 'd' };
+function b() {
+  console.log(this);
+}
+b(); // Window
+b.bind(obj2).call(); // obj2
+b.call(obj2); // obj2 
+b.apply(obj2); // obj2
+//명시적으로 this를 바꾸는 함수 메서드 삼총사 bind, call, apply를 사용하면 this가 객체를 가리킵니다.
+//(자세한건 아래의 다른 내용을 참조하자)
+
+//이제 마지막으로 생성자의 경우입니다. 처음부터 공포스러운 this를 쓰는 무시무시한 친구입니다.
+function Person(name, age){
+    this.name = name;
+    this.age = age;
+}
+Person.prototype.sayHi = function(){
+    console.log(this.name, this.age);
+}
+//생성자 함수도 함수라는 것 알고 계시죠? 만약 new로 호출하지 않고 그냥 호출한다면 어떻게 될까요?
+Person('ZeroCho', 25);
+console.log(window.name, window.age); // ZeroCho 25
+//그냥 함수에서 this가 window를 가리킨다고 했죠? 
+//그래서 this.name 과 this.age는 window.name, window.age가 되어버립니다.
+
+//이를 막으려면 new Person을 사용해야 합니다.
+var hero = new Person('Hero', 33); // Person {name: "Hero", age: 33}
+hero.sayHi(); // Hero 33
+//이렇게 new를 붙이면 this가 생성자를 통해 생성된 인스턴스(hero 자신)가 됩니다. 
+//실수로 new를 안 붙이는 문제를 막는 장치가 class가 ES6에서 추가되었습니다.
+
+//예외1)
+document.body.onclick = function() {
+    console.log(this); // <body>
+}
+//아니, 이건 그냥 함수인데 this가 window가 아니라 <body>입니다. 
+//객체 메서드도 아니고, bind한 것도 아니고, new 붙인 것도 아닌데 말이죠. 
+//누가 바꿨을까요? 바로 이벤트가 발생할 때, 내부적으로 this가 바뀐 것입니다. 
+//내부적으로 바뀐 것이기 때문에 동작을 외울 수밖에 없습니다. ㅠㅠ
+
+//예외2)
+$('div').on('click', function() {
+    console.log(this);
+});
+//이런 제이쿼리 코드 많이 보셨죠? this는 클릭한 div가 됩니다. 왜 그렇냐고요?
+//내부적으로 function을 호출할 때 그렇게 this를 바꿔버렸습니다. 이런 건 어쩔 수 없이 외워야 합니다.
+
+//예외3)
+$('div').on('click', function () {
+    console.log(this); // <div>
+    function inner() {
+        console.log('inner', this); // inner Window
+    }
+    inner();
+});
+//방금 전 클릭 이벤트에서 제이쿼리가 내부적으로 this를 바꿔버린다고 했습니다. 
+//근데 inner 함수 호출 시에는 this가 window입니다.
+//inner는 죄가 없습니다. 함수의 this는 기본적으로 window라는 원칙을 충실히 따른 것이죠. 
+//그저 click 이벤트 리스너가 잘못한 겁니다
+//(잘못했다기 보다는 내부적으로 this를 바꿨음에도 명시적으로 알리지 않은 것).
+
+//위의 문제를 해결하기 위해서는
+//1) this를 that이라는 변수에 저장하든지
+$('div').on('click', function () {
+    console.log(this); // <div>
+    var that = this;
+    function inner() {
+        console.log('inner', that); // inner <div>
+    }
+    inner();
+});
+//2) ES6 화살표 함수를 씁니다. 
+//   ES6 화살표 함수는 this로 window 대신 상위 함수의 this를 가져옵니다(여기서는 <div>)
+$('div').on('click', function () {
+    console.log(this); // <div>
+    const inner = () => {
+        console.log('inner', this); // inner <div>
+    }
+    inner();
+});
+
+//this에 대한 정리!!
+//1) this는 기본적으로 window이지만, 
+//2) 객체 메서드, bind call apply, new일 때 this가 바뀝니다. 
+//3) 그리고 이벤트리스너나 기타 라이브러리처럼 this를 내부적으로 바꿀 수도 있으니 
+//   항상 this를 확인해보셔야 하고요. 
+//4) 여러분이 선언한 function의 this는 항상 window라는 것 알아두세요.
+
+
 // //this 키워드 *********** 
 // //일반적으로 this는 객체의 프로퍼티인 함수에서 의미가 있다.
 // //** 메서드를 호출하면 this는 호출한 메서드를 소유하는 객체가 된다.**

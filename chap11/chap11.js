@@ -173,3 +173,159 @@
 // // there was an error...
 // // ...always executed
 // // perform cleanup here
+
+
+
+
+// ////////////////////////////////////////////////////////
+// //Error 객체에 관하여 (https://www.zerocho.com/category/JavaScript/post/5c1913622e014f001e827a89)
+
+// // 아래의 코드들은 크롬 F12 를 눌러 콘솔에다 적어보자
+// try {
+//     a.b.c.d. = f; // Uncaught SyntaxError: Unexpected token =
+// } catch (e) {
+//     console.dir(e);
+// }
+// //먼저 문법 오류입니다. d 뒤에 점이 붙어 있어 에러가 나는데요. 
+// //이 경우는 catch문에 에러가 걸리지 않고 바로 try 문에서부터 에러가 납니다. 
+// //문법 오류는 내서는 안 된다는 뜻입니다.
+
+// try {
+//     a.b.c.d = f;
+// } catch (e) {
+//     console.dir(e); // ReferenceError: a is not defined
+// }
+// //이제 문법은 유효하지만, 코드를 실행하는 과정에서 에러가 발생합니다. 
+// //console.dir를 통해 에러인 e가 객체임을 확인할 수 있습니다. e는 다음과 같이 생겼습니다.
+// {
+//     message: 'a is not defined',
+//     stack: 'ReferenceError: a is not defined\n    at <anonymous>:2:3',
+//     __proto__: Error
+//   }
+// //로토타입이 Error인 객체네요. 
+// //message에는 에러 메시지가, stack에는 에러가 코드의 어떤 부분에서 발생했는지 나와 있습니다. 
+// //__proto__를 한 번 펴 볼까요?
+// {
+//     constructor: ReferenceError()
+//     message: '',
+//     name: 'ReferenceError',
+//     toString: toString(),
+//     __proto__: Object,
+//   }
+// //SyntaxError, ReferenceError 외에도 자바스크립트에는 
+// //TypeError(공포의 cannot read property 'x' of undefined 에러가 이 유형입니다), 
+// //RangeError, EvalError, URIError 등이 있습니다.
+
+
+
+// //로그인 로직에서 간단한 에러를 만들어보고 처리방법에 대해 살펴보자
+//
+// function findUser(id, password) {
+//     User.findById(id, function (err, user) { // 아이디로 회원 찾기
+//         if (err) {
+//             throw err;
+//         }
+//         if (!user) {
+//             return '아이디에 해당하는 회원이 없습니다';
+//         }
+//         if (user.password === password) {
+//             return '로그인 성공';
+//         } else {
+//             return '비밀번호 틀림';
+//         }
+//     });
+// }
+//코드 상에서는 에러가 아니지만 비밀번호가 틀렸기 때문에 에러로 볼 수 있습니다. 
+
+// //return 부분을 throw로 바꿔서 실행해봅시다.
+// // new Error로 새로운 에러를 만들고 첫 번째 전달인자로 메시지를 넣어주면 됩니다.
+// function findUser(id,password){
+//     User.findById(id, function(err,user){
+//         if(err){throw err;}
+//         if(!user){throw new Error('아이디에 해당하는 회원이 없습니다.');}
+//         if(user.password === password){
+//             return '로그인 성공!';
+//         }else{
+//             throw new Error('비밀번호 틀림!');
+//         }
+//     });
+// };
+
+// var User = {
+//     findById: function(id,cb){
+//         if(id === 'zerocho'){
+//             cb(null, {password:'1234'});
+//         }else{
+//             cb(null, null);
+//         }
+//     },
+// };
+
+// try{
+//     findUser('zerocho','2345');
+// }catch(err){
+//     console.dir(err);   //Error: 비밀번호 틀림!
+// }
+
+// try {
+//     findUser('nero', '1234');
+// } catch (e) {
+//     console.dir(e); // Error: 아이디에 해당하는 회원이 없습니다.
+// }
+// //위와 같이 두 경우 모두 에러가 잘 발생하지만, 둘 다 기본 에러라서 구별이 쉽지 않습니다. 
+// //특히 catch 문 안에서 비밀번호가 틀린 경우와 아이디에 해당하는 회원이 없을 경우 두 가지를 
+// //한 번에 처리하고 싶을 때 문제가 생깁니다.
+
+// try {
+//     findUser('zerocho', '1234');
+// } catch (e) {
+//     if (비밀번호틀린에러) {
+//         // 비밀번호틀린에러 처리
+//     } else if (회원없음에러) {
+//         // 회원없음에러 처리
+//     }
+// }
+// //위와 같은 방식으로 catch문 안에서 저 if들을 어떻게 구분해야 할까요? 
+// //각각 다른 에러 이름을 붙여주면 좋을 것 같습니다.
+function findUser(id,password){
+    User.findById(id, function(err,user){ //function(){} === cb 라고 보면 된다!!!
+        if(err){
+            throw err;
+        }
+        if(!user){
+            var err = new Error('아이디에 해당하는 회원이 없습니다');
+            err.name = 'NoUserError';   //에러이름 설정
+            throw err;
+        }
+        if(user.password === password){
+            return '로그인 성공';
+        }else{
+            var err = new Error('비밀번호 틀림');
+            err.name = 'WrongPasswordError'; //에러이름 설정
+            throw err;
+        }
+    });
+}
+var User = {
+    findById: function(id,cb){
+        if(id === 'zerocho'){
+            cb(null, {password:'1234'});
+            //여기서 cb({password}) 이므로 위에서 user.password가 되는것이다!!객체구조일치!!
+            console.log(User);//{ findById: [Function: findById] }
+        }else{
+            cb(null, null);
+        }
+    },
+};
+
+try{
+    findUser('zerocho','1234');
+}catch(err){
+    if(err.name === 'NoUserError'){
+        console.log('회원이 없을 때 에러를 처리');
+    }else if(err.name === 'WrongPasswordError'){
+        console.log('비밀번호틀렸을 때 에러를 처리');
+    }else{
+        console.log('누가냐 넌..');
+    }
+}

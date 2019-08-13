@@ -421,7 +421,7 @@
 // //아래의 함수에서 String.prototype.split을 써서 한번에 한가지 속성만 체크해보자
 // function sanitizeATag(aTag){
 //     //태그에서 원하는 부분을 뽑아낸다.
-//     const parts = aTag.match(/<a\s+(.*?)>(.*?)<\/a>/i);
+//     const parts = aTag.match(/<a\s+(.*?)>(.*?)<\/a>/i);//i뒤에 g를 붙이면 전체로 나뉘어서 
 //     //parts[1]은 여는 <a>태그에 들어있는 속성이다.
 //     //parts[2]는 <a> </a> 태그 사이에 있는 텍스트이다.
 //     const attributes = parts[1] //위에서 그룹을 2개로 나눴기 때문에 part 0,1로 나눌수 있다.
@@ -459,6 +459,10 @@
 //     console.log(`<a> tag found at ${offset}. contents: ${g1}`);
 //     console.log(`m:${m}`);
 // });
+// replace는 match 사용방식으로 문자열을 찾는다. 
+//() 의 그룹으로 구분이 되어 그룹에 해당하는 데이터는 g1에 들어감.
+// m은 해당 문자열 전체를 가져온다.
+// offset은 ()의 인덱스 위치를 알려준다.
 // console.log(ex2);
 // // {/* <a> tag found at 0. contents: Foo
 // // m:<a class="foo" href="/foo" id="foo">Foo</a>
@@ -680,3 +684,14 @@
 // // https://developer.mozilla.org/ko/docs/Web/JavaScript/Guide/%EC%A0%95%EA%B7%9C%EC%8B%9D
 // // https://www.w3schools.com/jsref/jsref_obj_regexp.asp
 // //위의 주소에서 참조하여 정규식에 대해 공부하자
+
+
+
+///////////
+//메서드
+//문자열.match(패턴) : 문자열에 해당하는 패턴이 있으면 그 위치(index)를 반환합니다. 
+//                    해당하는 패턴이 없으면 -1을 반환합니다.
+//패턴.test(문자열) : 패턴과 일치하면 true를 아니면 false를 반환하는 메소드입니다.
+//                   이를 통해서 패턴과 일치하는 지 확인할 수 있습니다.
+//패턴.exec(문자열) : 패턴과 일치하면 배열을 반환하는데 첫 번째 요소는 일치하는 문자열을 반환하고, 
+//                   두 번째 요소부터는 정규표현식의 group(괄호)을 반환합니다

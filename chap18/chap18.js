@@ -253,6 +253,8 @@
 //3. 클래스(class)를 통한 선택                      getElementsByClassName()
 //4. CSS선택자(selector)를 통한 선택                querySelectorAll()
 //5. HTML 객체집합(object collection)을 통한 선택   document.write(title) //title은 예시
+//querySelector() 의 좀 더 정확한 방법은 <>태그 안의 문자열을 검색하는 것이다.
+
 
 //DOM 요소의 내용 변경
 // innerHTML 를 이용하여 내용변경
@@ -565,6 +567,8 @@ req.send("city=Seoul&zipcode=0614");
 //--> Ajax를 이용하여 개발을 손쉽게 할 수 있는 여러기능을 가진 개발환경을 Ajax프레임워크라고한다.
 // 현재 jquery가 가장 널리 쓰이고 있다.
 // $.ajax() 메소드는 모든 제이쿼리 Ajax 메소드의 핵심이 되는 메소드입니다.
+// $는 jQuery원형에서 볼때 var $ = jQuery; 이므로 jQuery를 써도되고 $를 써도 된다.
+// jQuery.fn = jQuery.prototype로 fn이 prototype이기 때문에 확장함수를 모든 제이쿼리 객체가 쓸 수 있던 겁니다
 //$.ajax() 메소드의 원형은 다음과 같습니다.
 //$.ajax([옵션])
 //옵션 : HTTP 요청을 구성하는 키와 값의 쌍으로 구성되는 헤더의 집합입니다

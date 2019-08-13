@@ -1,0 +1,90 @@
+<div id="count">0</div>
+<button id="up">+1</button>
+<button id="down">-1</button>
+<script>
+    // //방법1)
+    // var count=0;
+    // var counter = document.querySelector('#count');
+    // document.querySelector('#up').addEventListener('click',function(){
+    //     count++;
+    //     counter.textContent = count;//중복됨
+    // });
+    // document.querySelector('#down').addEventListener('click',function(){
+    //     count--;
+    //     counter.textContent = count;//중복됨
+    // });
+    // //코드를 보면 중복되는 부분이 있습니다. count를 변경할 때마다 DOM도 같이 변경하는 부분이 따라서 나옵니다. 
+    // //앞으로 이벤트 리스너를 추가할 때마다 count를 변경 후 DOM을 변경하는 부분도 추가해야 합니다. 
+    // //중복이 계속 발생하는 구조인 것이죠.
+
+    // //방법2)
+    // //getter와 setter를 알면 이렇게도 짤 수 있습니다. script 부분만 바뀝니다.
+    // var count = {};
+    // Object.defineProperty(count, 'number', { //chap9를 보면 자세히나옴
+    //     get : function(){
+    //         return this._num || 0;
+    //     },
+    //     set : function(num){
+    //         this._num = num;
+    //         console.log(this._num);
+    //         document.querySelector('#count').textContent = this._num;
+    //     },
+    // });
+    // document.querySelector('#up').addEventListener('click',function(){
+    //     count.number++; //count._num 으로 했는데... defineProperty에서 number로 설정했기 때문에 number로 한다.
+    // });
+    // document.querySelector('#down').addEventListener('click',function(){
+    //     count.number--;
+    // });
+    // //count 객체에 number라는 속성을 추가하는데, 
+    // //number 속성을 조회할 때(get)는 _num이라는 비밀 속성을 가져오고, 
+    // //number 속성에 값을 대입할 때(set)는 _num에 새로운 값을 대입한 후 DOM에 반영합니다. 
+    // //즉, 실제 카운트는 _num 속성에 되지만, getter와 setter를 사용하기 위해 number 속성을 대신 사용하는 것입니다. 
+    // //_num 속성을 접근 불가능한 비밀변수로 만들고 싶다면 클로저를 활용한 IIFE 패턴을 사용하면 되겠죠?
+
+    // //방법3)
+    // //ES2015 코드를 사용하면 좀 더 간단해집니다. defineProperty를 사용하지 않아도 되기 때문이죠.
+    // var count = {
+    //     get number(){
+    //         return this._num || 0;
+    //     },
+    //     set number(num){
+    //         this._num = num;
+    //         console.log(num);
+    //         document.querySelector('#count').textContent = this._num;
+    //     },
+    // };
+    // document.querySelector('#up').addEventListener('click',function(){
+    //     count.number++;
+    // });
+    // document.querySelector('#down').addEventListener('click',function(){
+    //     count.number--;
+    // });
+
+    //방법4)
+    //더 강력한 기능을 구현하고 싶다면 Proxy를 사용할 수 있습니다. ES2015에 추가된 기능입니다
+    // Proxy는 기존 객체를 건드리지 않고도 새 기능을 추가하거나 기존 기능을 수정할 수 있는 기능입니다. 
+    //기존 객체를 두고, 새로운 기능(handler)를 추가한 프록시 객체를 그 위에 덮어 씌우는 개념입니다.
+    const count = {};
+    const handler = {
+        get: (obj,name)=>{
+            if(name === 'number'){
+                return this._num || 0;
+            }
+        },
+        set : (obj,name,value)=>{ //set은 값 설정만 하는것이기 때문에 function(){}로 바꿀때 return이 필요없다.
+            if(name === 'number'){
+                this._num = value;
+                console.log(count);
+                document.querySelector('#count').textContent = this._num;
+            }
+        }
+    };
+    const proxy = new Proxy(count, handler);
+    document.querySelector('#up').addEventListener('click',function(){
+        proxy.number++;
+    });
+    document.querySelector('#down').addEventListener('click',function(){
+        proxy.number--;
+    });
+</script>
