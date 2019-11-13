@@ -275,6 +275,8 @@ console.log(o11.publicB()); //3 2씩 증가시킴
 //Person.prototype = new Korean();
 //위의 방식으로 자바스크립트에서도 상속이 가능하다.
 
+//프로토타입은 new로 객체를 여러개 생성할때 속성값을 한방에 추가하거나 바꿔줄 수 있다
+
 function Person1(name){this.name = name}; //사람 객체 선언
 function Korean(age){this.age = age}; //한국인 객체 선언
 
@@ -283,14 +285,14 @@ Korean.prototype.nationality = "Korea"; //Korean원형에 nationality 변수 추
 
 var kildong = new Person1("kil-dong"); //길동이라는 사람객체 생성
 console.log(kildong.species); //Human이 뜸.
-Person1.prototype.speak = function(){console.log(this.name + "입니다.");};
+Person1.prototype.speak = function(){console.log(this.name + "입니다.");};///////////////////////////비교1
 kildong.speak(); //kildong입니다. 뜸.. 위에서 바꾼게 바로 적용이 된다.
 
 var boy = new Korean(29); //소년이라는 한국인 객체 생성
 console.log(boy.age); //29 뜸
 console.log(boy.nationality); //korea 뜸
 
-Korean.prototype = new Person1(); // Korean원형의 prototype(_proto_)에 상속
+Korean.prototype = new Person1(); // Korean원형의 prototype(_proto_)에 상속///////////////////////////비교1
 console.log(boy.species); // undefined  이뜸... 즉! 상속받기 전에 생성한 객체에는 적용이 안됨.
 
 var newboy = new Korean(18); //그래서 다시 새로운 소년이라는 한국인 객체 생성
@@ -298,6 +300,8 @@ console.log(newboy.species); //Human 으로 잘 뜸!
 console.log(newboy.nationality); //undefined 뜸...기존의 nationality는 날라갔다... korea안뜸..
 
 // 위의 데이터구조는 이렇게 되어있다.. (기존의 nationality는 Person1로 대체됨.)
+// **데이터값을 찾을 때 Person1안의 name 단계에서 찾고 없으면 __proto__를 찾고 없으면 그 밑의 단계로 들어간다
+// 그래도 값이 없을때 undefined가 뜬다
 // Korean.prototype
 // 	▶Person1
 // 		▶name: undefined

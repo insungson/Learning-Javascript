@@ -167,6 +167,7 @@
 
 // /////////////////////////
 // //객체 보호: freezing(동결), sealing(봉인), preventing extension(확장 금지)
+// //      Object.freeze(객체)  Object.seal(객체)  Object.preventExtension(객체)
 
 // //객체 보호 옵션
 // //동작               일반객체(object)  동결객체(freezing)  봉인객체(sealing)   확장금지객체(preventing extension)
@@ -293,7 +294,7 @@
 // //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/set
 // //프록시(집에 와서 하기)
 // //프록시는 ES6부터 추가된 메타프로그래밍 기능이다. (메타프로그래밍은 자기 자신을 수정하는 것을 말한다.)
-// //객체 프록시는 간단히 말해 객체에 대한 작업을 가로채고, 필요하다면 작업 자체를 수정하는 기능이다.
+// //*객체 프록시는 간단히 말해 객체에 대한 작업을 가로채고, 필요하다면 작업 자체를 수정하는 기능이다.
 // //예를 보자
 // const coefficients = {
 //     a : 1,
@@ -310,8 +311,8 @@
 // }
 // console.log(evaluate(5, coefficients1));    //NaN
 // //coefficients1 는 b라는 프로퍼티가 없다. 그래서 NaN 값이 나오는 것이다
-// //coefficients1 에 b 프로퍼티를 할당하는 것도 방법이긴 하지만 프록시를 쓰는 방법이 더 낫다.
-// //프록시는 객체를 대상으로 한 작업을 가로채므로, 정의되지 않은 프로퍼티는 항상0을 반환하게 만들 수 있다.
+// //coefficients1 에 b 프로퍼티를 할당하는 것도 방법이긴 하지만 프록시를 쓰는 방법이 더 낫다.(효율성 측면)
+// //**프록시는 객체를 대상으로 한 작업을 가로채므로, 정의되지 않은 프로퍼티는 항상0을 반환하게 만들 수 있다.
 // const betterCoefficients = new Proxy(coefficients1, {
 //     get(target, key){
 //         return target[key] || 0;
@@ -499,3 +500,10 @@ proxy3.onlyNumber = 'hi'; //TypeError: onlyNumber 필드에는 정수만 입력�
 //위는 한 가지의 예시일 뿐이고, 여러분의 상상력에 따라 다양하게 활용할 수 있습니다. 
 //프록시 자체가 객체의  여러가지 기능을 확장할 수 있게 해주니까요. 
 //어떤 특정 동작을 할 때마다 설정해 둔 핸들러가 실행되기 때문에 자동화 작업에도 사용할 수 있을 것 같습니다
+
+
+
+
+/////////////////////////////////////////////////////////////////
+//https://www.w3resource.com/javascript-exercises/
+//자바스크립트 문제

@@ -92,7 +92,7 @@
 // console.log(arr); //[ 1, 4, 'a', 'b', 6, 7 ]
 
 //배열안에서 요소 교체하기(실제랑 책이랑 좀 다르다...)
-//copyWirhin메서드 : 배열이 수정된다. 
+//copyWithin메서드 : 배열이 수정된다. 
 //                  첫번쨰 요소는 선택된 인덱스를 삭제한다.(2번쨰 3번째에서 복사한만큼 앞에서 삭제한다.)
 //                  두번째 요소는 선택된 인덱스 부터 복사 시작한다.(default:0)
 //                  세번째 요소는 선택된 인덱스전까지 복사한다. (default : arr.length)
@@ -173,7 +173,13 @@
 // //   { name: 'Trevor' },
 // //   { name: 'Suzanne' } ]
 // // reverse메서드는 어떤 수를 넣던간에... 그냥 reverse()만 실행되는 것을 확인할 수 있다.
-
+// //참고로 숫자정렬시 sort는 2자리 숫자가 있으면 그냥 정렬되기 때문에 아래와 같이 사용해야한다
+// //(reverse()도 아래와 같이 써도 되고 sort((a,b) => b-a); 로 하면 reverse()와 같은 효과가 난다
+// let abc = [1,2,11,13];
+// abc.sort();
+// console.log(abc);//[ 1, 11, 13, 2 ]
+// abc.sort((a,b) => a-b);
+// console.log(abc);//[ 1, 2, 11, 13 ]
 
 //배열 검색
 //indexOf() : 배열안에서 요소를 찾는다. 찾는 요소의 인덱스값을 리턴한다.
@@ -250,7 +256,7 @@
 // }, juliet)); //Person { name: 'Juliet', id: 1 }
 // //
 // console.log(arr.find(p=>p.id === this.id),juliet);
-// //undefined Person { name: 'Juliet', id: 1 } 앞에 undefined가 뜨는데.. 이게 왜뜨는지 모르겠다..
+// //undefined Person { name: 'Juliet', id: 1 } 앞에 undefined가 뜬다 화살표함수는 this를 가지고 있기 때문이다
 // console.log(typeof juliet);
 // //object
 // //=> 화살표함수를 쓴건.. find(currentValue, index, arr) 의 세번째 요소인 배열객체가 안 들어갔고, 
@@ -672,11 +678,14 @@
 ///////////////////////////////////////////////////
 // //reduece로 구현한 버블정렬
 // const sortingReducer = (accumulator, value) => {
-//     const nextIndex = accumulator.findIndex(i => value < i );//findIndex()는 배열을 돌며 찾으면 해당인덱스 없으면 -1
-//     console.log('=>',nextIndex,accumulator.length);     //i는 배열내에서 순환하는 인덱스, value는 그다음 인덱스
+//     //accumulator[] 안의 요소값 보다 작은 요소 인덱스 찾음 (findIndex()는 배열을 돌며 찾으면 해당인덱스 없으면 -1)
+//     const nextIndex = accumulator.findIndex(i => value < i );
+//     console.log('=>',nextIndex,accumulator.length);  //i는 배열내에서 순환하는 인덱스, value는 그다음 인덱스
+//     //accumulator[] 안의 요소값들보다 작은 요소값이 있다면 그 인덱스를 선택, 없다면 맨뒤로 인덱스 선택
 //     const index = nextIndex > -1 ? nextIndex : accumulator.length;
 //     console.log('index=>>',index);
 //     console.log('value=>>',value);
+//     //accumulator[] 안에 splice로 인덱스에 맞는 값을 넣는다
 //     accumulator.splice(index, 0, value);
 //     console.log(accumulator);
 //     return accumulator;
@@ -773,14 +782,14 @@
 
 // //reduce는 비동기 프로그래밍을 할 때에도 유용합니다.
 // const promiseFactory = (time)=>{
-//     return new Promise((resolve,reject)=>{
+//     return new Promise((resolve,reject)=>{ //프로미스 방식으로 보냄(resolve,reject 포함)
 //         console.log(time);
-//         setTimeout(resolve,time);
+//         setTimeout(resolve,time); //resolve일때 setTimeout 작동
 //     });
 // };
 // [1000, 2000, 3000, 4000].reduce((acc,cur)=>{
-//     return acc.then(()=>promiseFactory(cur));
-// },Promise.resolve());
+//     return acc.then(()=>promiseFactory(cur)); //resolve.then으로 받아서 함수 실행 배열의 순서대로 실행
+// },Promise.resolve());  //초기값 resolve
 
 
 

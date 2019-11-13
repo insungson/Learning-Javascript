@@ -23,9 +23,37 @@
 // // c: 3
 
 
+// ///////////////////
+// //Object.create()
+// var 플토 = {
+//   type: '카드',
+//   attack: function(){},
+//   defend: function(){},
+// };
+// function 카드공장(name,att,hp){
+//   var 카드 = Object.create(플토); //객체를 생성할 수 있고 여기에 인자로 넣으면 __proto__로 객체에 들어간다
+//   카드.name = name;
+//   카드.att = att;
+//   카드.hp = hp;
+//   return 카드;
+// }
+// var 조조 = 카드공장('JOJO',10,50);
+// // 조조 객체의 데이터 형식
+// //   {name: "JOJO", att: 10, hp: 50}
+// //     att: 10
+// //     hp: 50
+// //     name: "JOJO"
+// //       __proto__:     //Object.create(플토); 인자를 넣으면 prototype으로 들어간다
+// //       attack: ƒ ()
+// //       defend: ƒ ()
+// //       type: "카드"
+// //         __proto__: Object
+
+
+
 // ////////////////
 // //Object.keys (for in 과 비교해서 보자)
-// //Object.keys는 객체에서 나열 가능한 문자열 프로퍼티를 배열로 반환한다. key : value로 구성되기 때문
+// //**Object.keys는 객체에서 나열 가능한 문자열 프로퍼티를 배열로 반환한다. key : value로 구성되기 때문
 // const SYM = Symbol();
 // const o = {a:1, b:2, c:3, [SYM]:4};
 // Object.keys(o).forEach(prop => console.log(`${prop} : ${o[prop]}`));
@@ -42,7 +70,127 @@
 //         .forEach(prop => console.log(`${prop} : ${o1[prop]}`));
 // // xochitl : 2
 // // xylophone : 5
+// // (참고로 for in 은 인덱스를 리턴, for of 는 값을 리턴한다)
 
+
+// //객체의 복사
+// var obj = {a:1, b:2, c:3}; 
+// Object.keys(obj); //["a","b","c"]  처럼 키값을 배열로 나열해준다@@
+// var obj2 = {}; //복사될 객체
+// Object.keys(obj).forEach(function(key){
+//   obj2[key] = obj[key]; //foreach문을 사용하여 각 배열의 키를 통해 값까지 가져올 수 있고 이렇게 붙여 넣으면
+// });                     //obj2의 객체도 obj처럼 복사가 된다
+
+//얕은 복사 = 참조
+//깊은 복사 = 복사
+
+// //얕은 복사
+// var obj = {a:1,b:{c:1}};
+// var obj1 = {};
+// Object.keys(obj).forEach(function(jk){
+//   obj1[jk] = obj[jk]; //이렇게 복사를 하면 a는 문자열이 복사되기 때문에 값을 바꿀 수 있지만..
+// });                   //b는 객체이기 때문에 참조가 된다! 
+// obj1.a = 5; //obj1{a:5,b:{c:1}}   obj{a:1,b:{c:1}}   처럼 a는 복사이기 때문에 값이 바뀐다 하지만!!
+// obj1.b.c = 3; 
+// //obj1={a:5,b:{c:3}}  obj={a:1,b:{c:3}}  처럼 b객체안의 c는 참조이기 때문에 obj1을 바꾸면 obj도 바뀐다
+// //객체를 대입하면 참조이다
+
+// //깊은 복사 1
+// function copyObj(obj){
+//   var obj2 = {};
+//   if(typeof obj === 'object' && obj !== null){ //obj가 객체이고 null이 아닐때
+//     for(var attr in obj){ //obj의 모든 요소중
+//       if(obj.hasOwnProperty(attr)){ //attr이 obj의 객체일때
+//         obj2[attr] = copyObj(obj)[attr]; //재귀함수로 한번 더 실행해서 내부까지 복사한다
+//       }
+//     }
+//   }else{
+//     obj2 = obj; //위의 조건이 아니면 그냥 복사
+//   }
+//   return obj2;  //복사된 값을 꺼낸다
+// }
+
+// copyObj(obj);
+
+// //깊은 복사2
+// var obj2 = JSON.parse(JSON.stringify(obj)); //객체를 -> 문자로 -> 다시 객체로 바꿈
+// //를써도 위처럼 3단계의 깊은 객체도 복사가 가능하다
+
+
+//CallByValue, CallByReference, CallBySharing
+
+//case1
+function a(x){  //var x = 함수 입력값; 이랑 같다고 보면 된다
+  x = 10;
+  console.log(x); //10  var x로 내부에서 선언된 변수이므로 10으로 바뀐다(함수내부에서만)
+}
+var b = 5;
+a(5);//10 
+console.log(b);//5  렉시컬 스코프에 의해 var b를 찾아 5가 된다
+
+
+//case2
+function c(r){ //var r = {a:5};  와 같다고 생각하면 된다 (객체를 대입하면 참조이다)
+  r.a = 10; //위의 선언에서 참조이기 때문에 객체의 인자를 바꾸면 d도 {a:10} 으로 바뀐다
+  console.log(r);       //(위에선 매개변수의 속성을 바꾸기 때문에 참조관계가 유지된다)
+}
+var d = {a: 5};
+c(d); //{a:10}}
+console.log(d); //{a:10}    (c()함수에서 d가 바뀌었기 때문에 여기서도 바뀐다)
+
+//call By Refernce는 자바스크립트에 존재하지 않는다
+//call by value만 존재한다
+function e(t){ //var t = {a:5}   여기서는 t와 {a:5} 는 참조관계이지만 
+  t = 10;   //t는 객체인데 10을 넣으므로  (여기선 매개변수 전체를 10으로 해서 참조관계가 끊킨다)
+  console.log(t); //여긴 그냥 10이 찍힌다 
+}
+var f = {a:5};
+e(f); //10
+console.log(f); //{a:5}    만약 call by reference라면 여기도 10이 찍혀야 한다
+//하지만 자바스크립트는 call by value 이므로 값이 안바뀐다
+
+//**case2 에서 둘의 차이는 함수안의 매개변수로 받을때 둘다 참조관계이지만 
+//첫번째는 속성으로 접근하여 값을 바꾸기 때문에 참조관계가 이어지지만... 
+//두번째는 매개변수 전체로 접근하여 값을 바꾸기 때문에 참조관계가 끊어진다!
+
+
+//생성자와 new! (아래의 클래스 생성자랑은 약간 다름)
+
+//우선 기존의 팩토리 형식으로 객체를 만들어보자 (함수방식)
+var prototype =  {
+  type: '카드',
+};
+function cardFactory(name, att, hp){
+  var card = Object.create(prototype); //여기서 객체를 생성하고 아래에서 객체에 속성을 추가한다
+  card.name = name;
+  card.att = att;
+  card.hp = hp;
+  return card;
+}
+card.prototype = prototype;
+
+var sony = cardFactory('쏘니', 10, 50);  //이렇게 객체를 만든다
+console.log(sony); //{name:'쏘니', att:10, hp:50}  처럼 객체가 생성됨
+
+
+//생성자 형식(객체방식, 생성자 사용)
+function Card(name, att, hp){
+  this.name = name; //this는 window를 가르킨다
+  this.att = att;   //this는 기본적으로 window를 가르키고, strict 모드에서는 undefined이다
+  this.hp = hp;
+}
+Card.prototype = prototype;
+
+var sony = new Card('쏘니', 10, 50);  //new를 붙여 객체를 만든다
+console.log(sony); //Card{name:'쏘니', att:10, hp:50}  
+//처럼 생성자 이름이 객체의 앞에 붙어있어 생성자를 통해 객체를 만들었다는 것을 알 수 있다
+
+//new를 안붙이면 객체가 생성되는것이 아니라 window의 속성이 변한다  
+//그리고 함수처리되어 undefined가 뜬다 
+var sony = Card('쏘니', 10, 50); //undefined  (Card에서 )
+console.log(window.att); //10
+console.log(window.hp); //50
+//위와 같이 그냥 window의 속성이 변해버린다
 
 
 // /////////////////////////
@@ -68,7 +216,7 @@
 //     this.age = age;
 // }
 // Person.getInfomations = function(instance){ //static 으로 선언
-//     return{                                 //(생성자객체로 바로 접근한것은 class내에서 static쓰는것과 같다)
+//     return{       //(new를 통한 인스턴스 생성 없이 생성자객체로 바로 접근한것은 class내에서 static쓰는것과 같다)
 //         name:instance.name,
 //         age:instance.age,
 //     }
@@ -111,7 +259,7 @@
 //         console.log("static method");
 //     }
 // }
-// //es6
+// //es6(class 선언은 호이스팅이 안된다)
 // class TestClass {
 //     print(){
 //         console.log("TestClass instance print method");
@@ -261,7 +409,7 @@
 //     constructor(superclass){
 //         this.superclass = superclass;
 //     }
-//     with(...mixins){
+//     with(...mixins){//...객체 는 이전객체를 가져와서 복사하는 것이다(배열도 가능함)
 //         return mixins.reduce((c, mixin) => mixin(c), this.superclass);
 //         //위의 코드는 이와 같다.
 //         // return minxins.reduce(function(c, mixin){
@@ -376,7 +524,9 @@
 //             }
 //             carProps.get(this).userGear = value; 
 //         }
-//         shift(gear){this.userGear = gear;}//이건 set userGear() 와 같다.(set userGear(value) 삭제시 에러발생)
+//         shift(gear){this.userGear = gear;}//this는 Class Car을 가르킨다
+//         //this.userGear는 set userGear() 와 같다.(set userGear(value) 삭제시 에러발생)
+//         //하지만 실제로 실행되는건 WeakMap 이다
 //     }
 //     return Car; //앞에서 클래스를 다 끝내고 WeakMap()을 쓰고 Car 클래스를 리턴한다.
 // })(); //그래서 IIEF가 들어갔다.
@@ -395,7 +545,7 @@
 // //     model: 'Model S',
 // //     _userGears: [ 'P', 'N', 'R', 'D' ] }
 
-// //WeakMap을 쓰는 이유
+// //**WeakMap을 쓰는 이유
 // //WeakMap 오브젝트에는 set(), get(), has(), delete() 메서드만 제공합니다. 
 // //WeakMap 키는 enumerable이 아니기 때문에 당연히 foreach(), entries() 메서드는 사용못한다.
 // //WeakMap 객체를 사용하는 이유중 하나는 객체의 private data를 저장할때나 세부적으로 실행할 어떤 것에 대해 
@@ -430,7 +580,7 @@
 // //정적 메서드 (static 메서드)
 // //정적 메서드는 특정 인스턴스에 적용되지 않는다.
 // //정적 메서드에서 this는 인스턴스가 아니라 클래스 자체에 묶인다.!! 
-// //*일반적으로 정적메서드에는 this 대신 클래스 이름을 사용하는게 좋은 습관이다!!
+// //**일반적으로 정적메서드에는 this 대신 클래스 이름을 사용하는게 좋은 습관이다!!
 // //아래의 예를 보자
 
 // class Car{
@@ -858,8 +1008,8 @@ function Vehicle(name, speed) {
   // 그 후에 이제 Sedan만 갖고 있는 maxSpeed 속성을 따로 추가한거죠.
   Sedan.prototype = Object.create(Vehicle.prototype);
   //Sedan의 prototype과 Vehicle의 prototype을 연결하는 겁니다
-  //Object.create는 Vehicle.prototype을 상속하는 새로운 객체를 만드는 메소드입니다. 
-  //그 상속한 객체를 Sedan.prototype에 대입하니까 Sedan이 Vehicle을 상속하게 되는 거죠.
+  //**Object.create는 Vehicle.prototype을 상속하는 새로운 객체를 만드는 메소드입니다. 
+  //**그 상속한 객체를 Sedan.prototype에 대입하니까 Sedan이 Vehicle을 상속하게 되는 거죠.
   //
   //@@Object.create(Vehicle.prototype)과 new Vehicle()의 차이를 알아두시면 좋습니다@@
   //Object.create는 객체를 만들되 생성자는 실행하지 않는 겁니다. 즉 그냥 프로토타입만 넣는거죠.

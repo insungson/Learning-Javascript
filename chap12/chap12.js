@@ -218,7 +218,8 @@
 //             값이 생략되면, undefined를 반환합니다.
 //rv : 제너레이터 실행을 재개 하기 위해서, optional value을 제너레이터의 next() 메서드로 전달하여 반환합니다.
 
-//yield 키워드는 실질적으로  value 와 done 이라는 두 개의 속성을 가진 IteratorResult 객체를 반환한다. 
+//**yield 키워드는 실질적으로  value 와 done 이라는 두 개의 속성을 가진 IteratorResult 객체를 리턴한다.
+//**제너레이터 버전의 return 키워드로 생각 할 수 있다. 
 //value 속성은 yield 표현(expression)의 실행 결과를 나타내고, done 속성은 제너레이터 함수가 완전히 
 //종료되었는지 여부를 불린(Boolean) 형태로 보여줍니다.
 
@@ -236,7 +237,8 @@
 //   return 문에 의해 반환되는 값과 done의 값이 true  로 리턴한다. (제너레이터에서 선언한 return문이다.)
 
 
-// //무지개 색을 반환하는 간단한 제너레이터의 예를 보자
+// //무지개 색을 반환하는 간단한 제너레이터의 예를 보자 
+// //(yield를 rainbow함수 제너레이터의 리턴이라 생각하자)(호출은 객체.next() 로 한다)
 // function* rainbow(){
 //     yield 'red';
 //     yield 'orange';
@@ -272,7 +274,7 @@
 // console.log(it); //{}
 // console.log(rainbow()); //{}
 
-// //위의 rainbow제너레이션은 이터레이터를 반환하기 떄문에 아래처럼 for of 루프가 사용가능하다.
+// //**위의 rainbow제너레이션은 이터레이터를 반환하기 떄문에 아래처럼 for of 루프가 사용가능하다.
 // for(let color of rainbow()){
 //     console.log(color);
 // }

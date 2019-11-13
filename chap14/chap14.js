@@ -17,6 +17,14 @@
 //콜백 : 음식점에서 너가 줄을 서서 기다리지 않도록, 너의 전화번호를 받아서 자리가 나면 전화해줌
 //프로미스 : 음식점에서 전동벨을 너한테 주고, 자리가 날때 전동벨을 울린다.
 
+// //콜백함수는 간단하게 반복문을 함수화 시킨것이라고 생각하면 된다
+// function repeat(num) {
+//   console.log(num);
+//   if(num < 5){ //조건문을 넣지 않으면 컴터 메모리에 무리가 간다
+//     repeat(num + 1);  //for문을 사용한것이라 생각하면 된다
+//   }
+// }
+// repeat(1);
 
 // ///////////
 // //콜백
@@ -195,21 +203,22 @@
 // // 프로미스는 콜백을 예측가능한 패턴으로 사용할 수 있게 하고, 프로미스 없이 콜백만
 // // 사용했을때 나타날 수 있는 엉뚱한 현상이나 찾기 힘든 버그를 상당수 해결한다.
 // // 프로미스의 기본개념은 프로미스 기반 비동기적 함수를 호출하면 그 함수를 프로미스 인스턴스를 리턴한다.
-// // 프로미스는 성공(fufilled)하거나, 실패(rejected)하거나 단 두가지중 하나이다.
+// // 프로미스는 성공(resolve)하거나, 실패(rejected)하거나 단 두가지중 하나이다.
 // // 성공한 프로미스가 나중에 실패하는일은 절대 없다. (성공이든 실패든 한번만 일어난다.)
 // // 프로미스가 결정되면 결정되었다(settled) 고한다.
-// // *프로미스는 객체이므로 어디든 전달할수 있다는 점도 콜백에 비해 장점이다.
-// // 비동기적 처리를 여기서 안하고 다른 함수에서 처리하게 하고 싶다면 프로미스를 넘기면 된다.
+// // **프로미스는 객체이므로 어디든 전달할수 있다는 점도 콜백에 비해 장점이다.
+// // **비동기적 처리를 여기서 안하고 다른 함수에서 처리하게 하고 싶다면 프로미스를 넘기면 된다.
 // // 마치 음식점에서 받은 호출기를 친구에게 맡긴것과 비슷하다. 예약된 시간에 오기만 하면 
 // // 누구든 호출기를 가지고 있으면 된다
 
 // //프로미스 만들기
-// //프로미스는 resolve(성공)과 reject(실패) 콜백이 있는 함수로 새 promise인스턴스를 만듦면 된다.
+// //**프로미스는 resolve(성공)과 reject(실패) 콜백이 있는 함수로 새 promise인스턴스를 만듦면 된다.
 // //resolve, reject를 typeof 로 찍어보면 function으로 나오는 것을 확인할 수 있고 문자열이나 데이터만 넣어도
 // //데이터를 보낼 수 있다.
 // //반면 resolve, reject의 데이터를 받을 then, catch 는 함수가 아니기 때문에 함수를 넣어야 한다.
 // //아래의 코드를 보자 매개변수를 받아서 5초 카운트다운에 매이지 않게하고, 카운트다운이 끝나면
 // //프로미스를 반환하게 한다.
+// //resolve, reject 로 보내고(함수정의), then, catch로 받는다(함수호출)
 // function countdown(seconds){
 //     return new Promise(function(resolve, reject){
 //         for(let i=seconds; i>=0; i--){
@@ -306,25 +315,24 @@
 //         this.superstitious = !!superstitious;
 //     }
 //     go(){
-//         const countdown = this;   //Countdown의 객체를 옮긴다. 
+//         const countdown = this;   //Countdown의 객체를 옮긴다.(this는 클래스 Countdown을 가르킴)
 //         return new Promise(function(resolve, reject){ //새로 생성한 인스턴스를 리턴으로 보냄
 //             for(let i=countdown.seconds; i>=0; i--){
 //                 setTimeout(function(){
 //                     if(countdown.superstitious && i === 13){
 //                         return reject(new Error("Oh My God"));
 //                     }
-//                     countdown.emit('tick', i); //tick 이벤트 발생 다른데서 listen 하여 값 받음.
-//                     if(i === 0){resolve();}    //countdown은 EventEmitter를 extends 상속받아 사용가능
-//                 },(countdown.seconds-i)*1000);
+//                     countdown.emit('tick', i); //emit(이벤트명, 변수) 변수는 여러개를 사용할 수 있다
+//                     if(i === 0){resolve();}    //변수에 대한 출력은 .on(이벤트,함수) 함수로 위의 변수를
+//                 },(countdown.seconds-i)*1000); //출력하면된다 
 //             }
 //         });
 //     }
 // }
 // //실제로 카운트다운을 시작하고 프로미스를 반환하는 부분은 go메서드이다.
-// //go메서드 안에서 가장 먼저 한일은 countdown에 this를 할당하였다. 
-// //카운트다운을 알기 위해선 this값을 알아야하고 13인지 아닌지 역시 콜백안에서 알아야 한다.
-// //this는 특별한 변수이고 콜백 안에서 값이 달라진다. 따라서 this의 현재값을 다른 변수에 
-// //저장해야 프로미스 안에서 쓸 수 있다.
+// //go메서드 안에서 가장 먼저 한일은 Class countdown를 this로 가져오고, 
+// //countdown 변수로 카운트다운 값에 접근하여 13인지 아닌지를 콜백안에서 접근한다.
+// //클래스에 저정된 변수는 this로 현재값을 다른 변수에 저장히여 프로미스 안에서 쓸 수 있다.
 
 // // const c = new Countdown(5);
 // // c.on('tick', function(i){       //on메서드에서 이벤트를 listen 한다.(go메서드 안에 있는것이지만 그냥 받는다)
@@ -346,7 +354,7 @@
 // //15를 넣을때 어떻게 바뀌는지 보자
 // const c1 = new Countdown(15,true) //false나 두번째 값을 안넣으면 13도 출력됨.
 //     .on('tick', function(i){          //이렇게 체인 연결도 가능하다.
-//         if(i>0){console.log(i+"......");}
+//         if(i>0){console.log(i+"......");} //위의 emit(이벤트,변수) 를 .on(이벤트,함수) 로 출력한다
 //     });
 // c1.go()
 //     .then(function(){
@@ -372,7 +380,7 @@
 //     // 1......
 
 // // 프로미스는 resolve 아니면 reject가 나온다는걸 여기서 알 수 있다.
-// // Countdown 인스턴스 생성시 두번째 값을 true로 하면 reject 이기 때문에
+// // Countdown 인스턴스 생성시 두번째 값을 true로 하면 조건식에 따라 reject 이기 때문에
 // // new Error("Oh My God") 가 실행된다. 프로미스는 resolve, reject 둘중 하나
 // // 이기 때문에 resolve에 해당하는 console.log("GO!!") 가 실행이 안된다.
 
@@ -496,13 +504,15 @@
 // //아래의 코드는 타임아웃을 거는 함수의 코드이다.
 // //setTimeout(function, milliseconds, param1, param2, ...)
 // //function, milliseconds : 이거 두개야 아는 것이니깐..
-// //param1, param2, ... : Additional parameters to pass to the function 
+// //param1, param2, ... : function으로 들어가는 인자들이다
+// //예를 들면 setTimeout(function(param1,param2){} , milliseconds)  과 같은 것이다
 // //
 // function addTimeout(fn, timeout){
 //     if(timeout === undefined){timeout = 1000;} //타임아웃의 기본값 설정
 //     return function(...args){
 //         return new Promise(function(resolve, reject){
 //             const tid = setTimeout(reject, timeout, new Error("promise timed out"));
+//             //그렇기 때문에 위의 코드에서 reject(new Error("promise timed out")) 가 들어가는것과 같다
 //             fn(...args)
 //                 .then(function(...args){
 //                     clearTimeout(tid);
@@ -525,6 +535,7 @@
 //         .then(addTimeout(launch, 11*1000))
 //         .then(msg => console.log(msg))
 //         .catch(err => console.error("Houston, we have a problem : " + err.message));
+//          //그래서 위의 catch에서 addTimeout의 에러가 여기서 잡힌다
 // //
 // // 5....
 // // 4....

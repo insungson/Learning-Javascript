@@ -120,7 +120,7 @@ $('div').on('click', function () {
 // //o.speak()를 호출하면 this는 객체o에 묶인다.
 // console.log(o.speak()); //My name is wallace!
 // const speak = o.speak;
-// console.log(speak === o.speak); //true 두변수는 같은 함수를 가르킨다.
+// console.log(speak === o.speak); //true   두변수는 같은 함수를 가르킨다.
 // console.log(speak()); //My name is undefined!
 // //위와 같이 함수를 호출하면 이 함수가 어느 객체에 묶이는지 모르기 때문에
 // //this는 undefined에 묶인다.
@@ -142,11 +142,13 @@ $('div').on('click', function () {
 // console.log(v.greetBackWords()); 
 // //위의 코드는 에러가 뜬다. Cannot read property 'length' of undefined
 
+//앞에서 말한것 처럼 () => 화살표 함수를 사용하면 this문제가 해결되므로 에러가 발생하지 않는다
+
 // //앞에서 나온 this를 변수self에 할당해보자
 // const v = {
 //     name: 'Julie',
 //     greetBackwards: function() {
-//         const self = this; //this -> self 로 할당하였다.. that으로도 할당 가능하다.
+//         const self = this; //this -> self 로 할당하였다.. 어떤 변수들이든 할당 가능하다.
 //         function getReverseName() {
 //             let nameBackwards = '';
 //             for(let i=self.name.length-1; i>=0; i--) {
@@ -175,7 +177,7 @@ $('div').on('click', function () {
 // 이단 호출부를 식별한 다음 4가지 규칙을 열거한 우선순위에 따라 적용한다.
 
 // 1. new로 호출했다면 새로 생성된 객체로 바인딩된다.
-// 2. call이나 apply 또는 bind로 호출됐다면 주어진 객체로 바인딩된다.
+// 2. call이나 apply 또는 bind로 호출됐다면 주어진 객체로 바인딩된다.(함수에 객체를 상속한다고 생각하자)
 // 3. 호출의 주체인 콘텍스트 객체로 호출됐다면 바로 이 콘텍스트 객체로 바인딩된다.
 // 4. 기본 바인딩에서 엄격 모드는 undefined, 그 밖엔 전역 객체로 바인딩된다.
 
@@ -202,7 +204,7 @@ $('div').on('click', function () {
 //     greetBackWords: function(){
 //         const getReverseName = () => {
 //             let nameBackwards = '';
-//             for(let i=this.name.length-1;i>=0;i--){ //위처럼 self 없이 그냥 this 씀.
+//             for(let i=this.name.length-1;i>=0;i--){ //위처럼 self 없이 그냥 this 씀.(화살표함수써서)
 //                 nameBackwards += this.name[i];
 //             }
 //             return nameBackwards; //위의 예시처럼 그냥 return만 있으면 매개변수 => 리턴 하면되지만

@@ -1,3 +1,63 @@
+// //스코프에 대한 간략한 정의 (스코프체인 위로 올라가서 찾고 한거임)
+// //외부에서 변수를 선언하면 내부에서는 안에서 그걸 찾고 없으면 찾을때까지 계속 위로 올라간다
+// //내부에서 변수를 선언하면.. 외부에서는 그 변수를 찾을 수 없다! 
+// var name = 'Son';
+// function outer(){
+//   console.log('외부',name);//외부 Son  (내부에 name이 없어서 위로 올라가서 찾았다)
+//   function inner(){
+//     var enemy = 'Nero';
+//     console.log('내부',name);//내부 Son (내부에 name이 없어서 위로 올라가고. 또 올라가서 찾았다)
+//   }
+//   inner();
+// }
+// outer();
+// console.log(enemy); //enemy는 함수 내부에서 선언했기 때문에 스코프(영역)문제로 
+// //ReferenceError: enemy is not defined 에러가 발생한다
+
+
+// //렉시컬 스코프(정적 스코프) (자바스크립트가 다이네믹하단 소리를 듣지만 스코프만은 정적이다)(이미 쓰기전부터 정해져있음)
+// //*(정적이라는건.. 이미 var이든 name이든 코드를 적을때 이미 정해지기 때문에 정적이라는 것이다)
+// //*(만약.. 자바스크립트가 동적스코프라면 var name = 'nero'; 일때 log()에서 nero가 찍혀야 한다)
+// //name = 'zero'; 일때 내부에서 name, log()를 선언한게 아니기 때문에 외부에서 변수name을 찾아 값을 바꾸게 된다
+// //외부 함수log()에서도 마찬가지로 name에 대한 선언이 없기 때문에 외부 name을 찾게 된다 이미 외부변수 name이
+// //바뀌었으므로 nero가 된다 
+// //var name = 'nero';로 다시 선언한다면 log() 함수에서 name 변수를 찾고 없으면 외부를 찾으므로 Son이 된다
+// //(log()함수가 wrapper 내부에 없기 때문에 그런 것이다)
+// //wrapper()에서 바로 console.log를 실행하면 그 내부 함수의 변수가 뜬다
+// var name = 'Son';
+// function log(){
+//   console.log(name);
+// }
+// function wrapper(){
+//   var name = 'nero'; //일땐 Son nero  (name 변수는 wrapper안에 갇히기 때문에 비밀변수로 사용할 수 있다)
+//   //name = 'zero'; //일땐 zero zero
+//   log();
+//   console.log(name);//nero
+// }
+// wrapper();
+//비밀변수는 코드를 감춘다면 내부 변수를 알 수 없기 때문에 유용하게 쓰인다
+
+
+//클로저 (함수와 함수가 접근할 수 있는 스코프가 클로저 관계를 맺는다)
+//(위에선 log(), wrapper()가 전역으로 접근되기 때문에 서로 클로저 관계라고 할 수 있다)
+// 반복문과 비동기 함수가 만날때 클로저문제가 자주 발생한다
+// for(var i = 0 ; i < 100; i++){
+//   setTimeout(function(){
+//     console.log(i); //여기서의 i는 렉시컬 스코프에 의해 쓰는 순간 선언한 i를 찾게된다(for문에서 선언된 i를 가르킨다)
+//   }, i * 1000);     //그래서 i의 마지막 수가 setTimeout에 계속 찍히는 것이다
+// }
+
+// //클로저 문제 해결 방법
+// for(var i = 0; i < 100; i++){
+//   function closer(j){ //***closer(j) 에서 j 는 var j = 0; 을 선언한것과 같은 것이다
+//     setTimeout(function(){  //i로 써도 var i = 0; 을 선언한것과 같기 때문에 렉시컬 스코프에 의해 
+//       console.log(j); //여기의 i를 가르키는게 위의 var j = 0; 이므로.. 제대로 작동 된다!!
+//     },j * 1000);      //(var j 는 렉시컬 스코프정의에 의해 closer() 안에 갇힌 변수이다!)
+//   }
+//   closer(i);
+// }
+
+
 // //정의 와 선언의 차이
 // //정의는 let x;  선언은 let x =1;  이런것임.
 // const x = 3;
@@ -50,6 +110,11 @@
 // john["mother"] = "rani";// 2nd way to assign using brackets and key must be string
 //객체 생성 후 프로퍼티를 추가할때 씀..
 
+//위에서 var mom = "mother"; 을 사용할때
+//john.mom 은 undefined가 나온다
+//john[mom]으로 접근해야 "rani" 가 나온다 이유는 "mother" 자체가 mom으로 되있기 때문이다 
+//mom은 "mother"만 가르키기 때문!
+
 //위의 코드를 전역스코프에 의존하지 않게 바꿔보자
 // let user = {
 //     name : "Irena",
@@ -65,12 +130,12 @@
 // console.log(getBirthYear(user)); //1994
 
 
-//원시형 스코프 VS 객체 스코프의 범위에 대해 알아보자
+//**원시형 스코프 VS 객체 스코프의 범위에 대해 알아보자
 
 // 아래는 원시형 스코프의 예제이다.. 원시형 데이터를 변수에 할당하면 변화x이다.
 // {
 //     //외부블록
-//     let x = 'blue';
+//     let x = 'blue'; //문자로 된 원시형 리터럴
 //     console.log(x); //blue
 //     {
 //         //내부블록
@@ -84,7 +149,7 @@
 // //반면 객체형은 내부 데이터를 바꿀 수 있다. 아래의 예제를 보자
 // {
 //     //외부블럭
-//     let x = {color:"blue"};
+//     let x = {color:"blue"}; //객체로된 객체형
 //     let y = x;  //x와 y는 같은 객체를 가르킨다.
 //     let z = 3;
 //     {
@@ -216,11 +281,9 @@
 // //위의 코드를 바꿔보자 (2번 방법임)
 // var arr1 = [];
 // for(var i=0; i<5; i++){
-//     arr1[i] = function(id){
-//         return function(){
+//     arr1[i] = (function(id){
 //             return id;
-//         }
-//     }(i);
+//     })(i);
 // }
 // console.log(arr1); //[ [Function], [Function], [Function], [Function], [Function] ] 
 // //arr도 그렇고 arr1도 그렇고 각 배열의 인덱스에 함수가 들어간것을 알 수 있다.
@@ -319,14 +382,16 @@
 // // 책에 있는거 복사하기...
 
 
-// //함수 호이스팅
+// //함수 호이스팅(클래스는 선언시 호이스팅 안됨)
 // //var로 선언된 변수처럼 함수선언도 스코프 맨위로 끌어올려진다.
 // f();
 // function f(){
 //     console.log('f'); //f 가 찍힌다.
 // }
 
-// //하지만 아래처럼 let을 사용하는 경우 에러가 발생한다.
+// //하지만 아래처럼 let을(var도 마찬가지) 사용하는 경우 에러가 발생한다.
+// //이유는 함수는 var let과 달리 function 함수명(){} 과 같은 함수 선언식이 호이스팅되고
+// //const 함수명 = ()=>{} 과 같은 함수 표현식은 호이스팅되지 않기 때문이다
 // f(); //f is not defined
 // let f = function(){
 //     console.log('f');

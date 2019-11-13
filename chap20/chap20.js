@@ -219,7 +219,7 @@
 //2) 태그.parentNode, 태그.parentElement
 //  자식은 여러 개일 수 있기 때문에 children이나 childNodes같은 복수형 단어를 썼다면 부모는 
 //  항상 한명이기 때문에 단수형 parentNode입니다
-//3) 태그.innerHTML, 태그.outerHTML
+//3) 태그.innerHTML, 태그.outerHTML (textContent 는 text만 불러온다)
     // var footer = document.getElementsByTagName('footer')[0];
     // footer.innerHTML; // 'hello'
     // footer.innerHTML = 'goodbye';
