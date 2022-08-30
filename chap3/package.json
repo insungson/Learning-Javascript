@@ -9,7 +9,7 @@
     "eslint": "^5.15.1",
     "gulp": "^4.0.0",
     "math-money": "^0.1.1",
-    "moment-timezone": "^0.5.23"
+    "moment-timezone": "^0.5.35"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",
